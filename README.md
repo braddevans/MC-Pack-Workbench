@@ -1,6 +1,6 @@
 # Minecraft Pack Workbench
 
-MCPW is a tool for editing Minecraft resource/texture packs, and it was forked from RPW.
+MCPW is a tool for editing Minecraft resource/texture packs, and it was originally forked from [https://github.com/mcRPW/rp](Resource Pack Workbench).
 
 **Pull Requests are welcome!**
 
