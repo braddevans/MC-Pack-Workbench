@@ -24,9 +24,9 @@ Either add it to library so you can remix it (library menu), or create a new pro
 
 ## Support?
 
-For help with using MCPW, please send a tweet my way:
+For help with using MCPW, please tweet me on Twitter:
 
-[![Tweet @Alien_Drew](https://twitter.com/intent/tweet?screen_name=Alien_Drew&ref_src=twsrc%5Etfw)
+[![Tweet @Alien_Drew](https://twitter.com/intent/tweet?screen_name=Alien_Drew&ref_src=twsrc%5Etfw)]
 
 ## Setting up MCPW for development
 
