@@ -9,7 +9,7 @@ Many options are in the context menu when clicking assets!
 
 ## Links
 
-- [**Official RPW website**](https://mcrpw.github.io/)
+- [**Official RPW website**](https://mcrpw.github.io/) (Archived version in case the site goes down is [here](https://web.archive.org/web/20190522074541/https://mcrpw.github.io/) as it appeared on May 22, 2019)
 
 ## FAQ
 
