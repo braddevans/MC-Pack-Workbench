@@ -1,20 +1,20 @@
-# Resource Pack Workbench
+# Minecraft Pack Workbench
 
-RPW is a tool for editing Minecraft resource packs.
+MCPW is a tool for editing Minecraft resource/texture packs, and it was forked from RPW.
 
 **Pull Requests are welcome!**
 
-Please read the built-in help before asking questions, and go through the RPW menus.
+Please read the built-in help before asking questions, and go through the MCPW menus.
 Many options are in the context menu when clicking assets!
 
 ## Links
 
 - [**Official RPW website**](https://mcrpw.github.io/)
-- [RPW on Twitter (announcements)](https://twitter.com/RPWapp)
+- [**Official RPW github**](https://github.com/mcRPW/rpw)
 
 ## FAQ
 
-**Q: RPW opens images in Paint instead of Gimp. How to fix?**
+**Q: MCPW opens images in Paint instead of Gimp. How to fix?**
 
 Please see issues [#53](https://github.com/mcRPW/rpw/issues/53) and [#58](https://github.com/mcRPW/rpw/issues/58).
 
@@ -24,14 +24,14 @@ Either add it to library so you can remix it (library menu), or create a new pro
 
 ## Support?
 
-For help with using RPW, please use our Gitter channel:
+For help with using MCPW, please send a tweet my way:
 
-[![Join the chat at https://gitter.im/MightyPork/rpw](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MightyPork/rpw)
+[![Tweet @Alien_Drew](https://twitter.com/intent/tweet?screen_name=Alien_Drew&ref_src=twsrc%5Etfw)
 
-## Setting up RPW for development
+## Setting up MCPW for development
 
-*If you plan to work on RPW's source code:*
+*If you plan to work on MCPW's source code:*
 
-Currently RPW is set up as an IntelliJ IDEA project, but what IDE to use is up to you.
+Currently MCPW is set up as an IntelliJ IDEA project, but what IDE to use is up to you.
 
 It's a Maven project, so all libraries should be downloaded by the IDE automatically.
