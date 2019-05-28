@@ -10,7 +10,7 @@ Please read the built-in help before asking questions, and go through the MCPW m
 Many options are in the context menu when clicking assets!
 
 ## Links
-- [**Official MCPW website**](https://thealiendrew.github.io/mcpw)
+- [**Official MCPW website**](https://thealiendrew.github.io/mc-pack-workbench)
 - [MCPW on Twitter (announcements)](https://twitter.com/Alien_Drew)
 - [**Official RPW website**](https://mcrpw.github.io/) (Archived version in case the site goes down is [here](https://web.archive.org/web/20190522074541/https://mcrpw.github.io/) as it appeared on May 22, 2019)
 - [RPW on Twitter (announcements)](https://twitter.com/RPWapp)
