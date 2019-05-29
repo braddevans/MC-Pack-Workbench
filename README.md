@@ -1,3 +1,5 @@
+**Note: Since converting packs isn't possible with the program on it's own, please use Mojang's [TextureEnder](https://github.com/Mojang/TextureEnder) to convert texture packs to resource packs, and either Hypixel's [Resource Pack Converter](https://github.com/HypixelDev/ResourcePackConverter) or Mojang's [slicer](https://github.com/Mojang/slicer) to convert old resource packs to the 1.13/1.14 format.**
+
 # Minecraft Pack Workbench
 
 MCPW is a tool for editing Minecraft resource/texture packs.
