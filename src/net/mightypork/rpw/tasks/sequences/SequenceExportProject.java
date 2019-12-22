@@ -1,17 +1,5 @@
 package net.mightypork.rpw.tasks.sequences;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Const;
@@ -33,15 +21,21 @@ import net.mightypork.rpw.utils.files.ZipBuilder;
 import net.mightypork.rpw.utils.files.ZipUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SequenceExportProject extends AbstractMonitoredSequence {
 
     private final File target;
-    private ZipBuilder zb;
     private final Project project;
     private final Runnable successRunnable;
+    private ZipBuilder zb;
 
     public SequenceExportProject(File target, Runnable onSuccess) {
         this.target = target;
@@ -49,18 +43,45 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         this.project = Projects.getActive();
     }
 
+    public static int getPackMetaNumber() {
+        String vers = Config.LIBRARY_VERSION.split("\\+")[0];
+
+        Matcher matcher_mnp = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+).*").matcher(vers);
+        Matcher matcher_mn = Pattern.compile("^(\\d+)\\.(\\d+).*").matcher(vers);
+        Matcher matcher_snapshot = Pattern.compile("^(\\d{2}w\\d{2}).*").matcher(vers);
+
+        Matcher m;
+
+        m = matcher_mn;
+        if (m.find()) {
+            // Regular release
+            int major = Integer.valueOf(m.group(1));
+            int minor = Integer.valueOf(m.group(2));
+
+            if (major == 1 && minor < 9) {
+                return 1;
+            } else if (major > 1 || (major == 1 && minor > 12)) {
+                return 4;
+            } else if (major == 1 && minor > 10) {
+                return 3;
+            } else if (major == 1) {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+        return 3;
+    }
 
     @Override
     protected String getMonitorHeading() {
         return "Exporting project";
     }
 
-
     @Override
     public int getStepCount() {
         return 6;
     }
-
 
     @Override
     public String getStepName(int step) {
@@ -83,7 +104,6 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
         return null;
     }
-
 
     @Override
     protected boolean step(int step) {
@@ -113,13 +133,11 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         return false;
     }
 
-
     private boolean stepPrepareOutput() throws FileNotFoundException {
         zb = new ZipBuilder(target);
 
         return true;
     }
-
 
     private boolean stepAddIncludedExtras() {
         try {
@@ -133,7 +151,6 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         return true;
     }
 
-
     private boolean stepAddCustomSounds() throws IOException {
         final File dir = project.getCustomSoundsDirectory();
         addDirectoryToZip(dir, "assets/minecraft/sounds");
@@ -141,14 +158,12 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         return true;
     }
 
-
     private boolean stepAddCustomLanguages() throws IOException {
         final File dir = project.getCustomLangDirectory();
         addDirectoryToZip(dir, "assets/minecraft/lang");
 
         return true;
     }
-
 
     private boolean stepAddConfigFiles() throws IOException {
         // pack.png
@@ -193,7 +208,6 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         return true;
     }
 
-
     private boolean stepExportProjectAssets() {
         Log.f2("Adding project asset files.");
 
@@ -206,14 +220,12 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         return true;
     }
 
-
     @Override
     protected void doBefore() {
         Alerts.loading(true);
 
         Log.f1("Exporting project \"" + project.getTitle() + "\" to " + target);
     }
-
 
     @Override
     protected void doAfter(boolean success) {
@@ -226,12 +238,12 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         }
 
         // Unzip
-        if(Projects.getActive().getUnzip() == true){
+        if (Projects.getActive().getUnzip() == true) {
             try {
                 Log.i("Unziping " + Projects.getActive().getName());
                 ZipUtils.extractZip(target, OsUtils.getMcDir("resourcepacks/" + Projects.getActive().getName()), null);
                 Files.delete(Paths.get(target.getPath()));
-            } catch(IOException exception) {
+            } catch (IOException exception) {
                 exception.printStackTrace();
             }
         }
@@ -258,7 +270,6 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
         Alerts.info(App.activeDialog, "Export successful.");
     }
-
 
     private void addDirectoryToZip(File dir, String pathPrefix) throws IOException {
         final List<File> filesToAdd = new ArrayList<File>();
@@ -358,34 +369,6 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
                 }
             }
         }
-    }
-
-    public static int getPackMetaNumber() {
-        String vers = Config.LIBRARY_VERSION.split("\\+")[0];
-
-        Matcher matcher_mnp = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+).*").matcher(vers);
-        Matcher matcher_mn = Pattern.compile("^(\\d+)\\.(\\d+).*").matcher(vers);
-        Matcher matcher_snapshot = Pattern.compile("^(\\d{2}w\\d{2}).*").matcher(vers);
-
-        Matcher m;
-
-        m = matcher_mn;
-        if (m.find()) {
-            // Regular release
-            int major = Integer.valueOf(m.group(1));
-            int minor = Integer.valueOf(m.group(2));
-
-            if (major == 1 && minor < 9) {
-                return 1;
-            } else if (major > 1 || (major == 1 && minor > 10)) {
-                return 3;
-            } else if (major == 1 && (minor == 9 || minor == 10)) {
-                return 2;
-            } else {
-                return 3;
-            }
-        }
-        return 3;
     }
 
 }
