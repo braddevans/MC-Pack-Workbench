@@ -10,12 +10,17 @@ repositories {
     }
 }
 
+configurations {
+    implementationInclude
+}
+
 dependencies {
-    implementation 'com.google.code.gson:gson:2.2.4'
-    implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
-    implementation 'com.fifesoft:rsyntaxtextarea:2.5.0'
-    implementation 'net.coobird:thumbnailator:0.4.6'
-    implementation 'org.swinglabs.swingx:swingx-all:1.6.5-1'
+    implementationInclude 'com.google.code.gson:gson:2.2.4'
+    implementationInclude 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
+    implementationInclude 'com.fifesoft:rsyntaxtextarea:2.5.0'
+    implementationInclude 'net.coobird:thumbnailator:0.4.6'
+    implementationInclude 'org.swinglabs.swingx:swingx-all:1.6.5-1'
+    configurations.implementation.extendsFrom(configurations.implementationInclude)
 }
 
 group = 'RPW'
@@ -28,5 +33,16 @@ publishing {
         maven(MavenPublication) {
             from(components.java)
         }
+    }
+}
+
+jar {
+    from {
+        configurations.implementationInclude.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    manifest {
+        attributes(
+                'Main-Class': 'net.mightypork.rpw.App'
+        )
     }
 }
