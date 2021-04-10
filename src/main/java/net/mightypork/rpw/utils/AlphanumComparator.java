@@ -2,16 +2,13 @@ package net.mightypork.rpw.utils;
 
 import java.util.Comparator;
 
-
 public class AlphanumComparator implements Comparator<String> {
 
     public static final AlphanumComparator instance = new AlphanumComparator();
 
-
     private final boolean isDigit(char ch) {
         return ch >= 48 && ch <= 57;
     }
-
 
     private final String getChunk(String s, int slength, int marker) {
         final StringBuilder chunk = new StringBuilder();
@@ -21,21 +18,21 @@ public class AlphanumComparator implements Comparator<String> {
         if (isDigit(c)) {
             while (marker < slength) {
                 c = s.charAt(marker);
-                if (!isDigit(c)) break;
+                if (! isDigit(c)) { break; }
                 chunk.append(c);
                 marker++;
             }
-        } else {
+        }
+        else {
             while (marker < slength) {
                 c = s.charAt(marker);
-                if (isDigit(c)) break;
+                if (isDigit(c)) { break; }
                 chunk.append(c);
                 marker++;
             }
         }
         return chunk.toString();
     }
-
 
     @Override
     public int compare(String o1, String o2) {
@@ -69,11 +66,12 @@ public class AlphanumComparator implements Comparator<String> {
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 result = thisChunk.compareTo(thatChunk);
             }
 
-            if (result != 0) return result;
+            if (result != 0) { return result; }
         }
 
         return s1Length - s2Length;

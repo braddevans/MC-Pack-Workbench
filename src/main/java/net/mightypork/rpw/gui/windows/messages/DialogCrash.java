@@ -1,16 +1,5 @@
 package net.mightypork.rpw.gui.windows.messages;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-
-import javax.swing.JButton;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Const;
@@ -21,15 +10,23 @@ import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
 
 public class DialogCrash extends DialogTerminalBase {
 
+    private final String reportText;
     private JButton buttonQuit;
     private JButton buttonContinue;
-    private final String reportText;
     private JButton buttonCopy;
     private JButton buttonGH;
-
 
     public DialogCrash(Throwable error) {
         super(App.getFrame(), Const.APP_NAME_SHORT + " has crashed!");
@@ -41,13 +38,11 @@ public class DialogCrash extends DialogTerminalBase {
         createDialog();
     }
 
-
     @Override
     protected void initGui() {
         setModal(true);
         setModalityType(ModalityType.APPLICATION_MODAL);
     }
-
 
     private String createReport(Throwable error) {
         final StringWriter sw = new StringWriter();
@@ -58,7 +53,8 @@ public class DialogCrash extends DialogTerminalBase {
 
         try {
             wholeLogAsString = FileUtils.fileToString(OsUtils.getAppDir(Paths.FILE_LOG)).replace("\n\n", "\n");
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             e.printStackTrace();
         }
 
@@ -116,7 +112,6 @@ public class DialogCrash extends DialogTerminalBase {
         return txt;
     }
 
-
     @Override
     protected void addActions() {
         buttonGH.addActionListener(new ActionListener() {
@@ -125,7 +120,8 @@ public class DialogCrash extends DialogTerminalBase {
             public void actionPerformed(ActionEvent e) {
                 try {
                     DesktopApi.browse(new URL("https://github.com/mcRPW/rpw/issues/new").toURI());
-                } catch (final Exception exc) {
+                }
+                catch (final Exception exc) {
                     Alerts.error(self(), "Sorry, something went wrong.");
                 }
 
@@ -141,7 +137,8 @@ public class DialogCrash extends DialogTerminalBase {
                     final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(selection, selection);
                     Alerts.info(App.getFrame(), "Text copied to clipboard.");
-                } catch (final Exception e) {
+                }
+                catch (final Exception e) {
                     Alerts.error(App.getFrame(), "Sorry, it didn't work.\nTry Ctrl+A and Ctrl+C instead.");
                     Log.e("Error copying to clipboard", e);
                 }
@@ -158,30 +155,27 @@ public class DialogCrash extends DialogTerminalBase {
                 try {
                     App.inst.deinit();
                     System.exit(1);
-                } catch (final Throwable t) {
+                }
+                catch (final Throwable t) {
                 }
             }
         });
     }
-
 
     @Override
     protected String getHeadingText() {
         return "Crash Report";
     }
 
-
     @Override
     protected String getLogText() {
         return reportText;
     }
 
-
     @Override
     protected boolean hasButtons() {
         return true;
     }
-
 
     @Override
     protected JButton[] makeButtons() {

@@ -1,11 +1,10 @@
 package net.mightypork.rpw.tree.assets;
 
-import java.io.File;
-
 import net.mightypork.rpw.gui.helpers.FileChooser;
 import net.mightypork.rpw.gui.helpers.FileChooser.FileChooserFilter;
 import net.mightypork.rpw.utils.files.FileUtils;
 
+import java.io.File;
 
 /**
  * Enum of asset filetypes
@@ -36,17 +35,33 @@ public enum EAsset {
 
     //@formatter:on
 
+    private String extension;
+
     private EAsset(String extension) {
         this.extension = extension;
     }
 
-    private String extension;
+    public static EAsset forExtension(String ext) {
+        for (final EAsset a : EAsset.values()) {
+            if (a.extension.equalsIgnoreCase(ext)) {
+                return a;
+            }
+        }
 
+        return UNKNOWN;
+    }
+
+    public static EAsset forFile(File file) {
+        return forExtension(FileUtils.getExtension(file));
+    }
+
+    public static EAsset forFile(String file) {
+        return forExtension(FileUtils.getExtension(file));
+    }
 
     public String getExtension() {
         return this.extension;
     }
-
 
     public boolean isText() {
         switch (this) {
@@ -62,36 +77,29 @@ public enum EAsset {
         }
     }
 
-
     public boolean isImage() {
         return this == IMAGE;
     }
-
 
     public boolean isSound() {
         return this == SOUND;
     }
 
-
     public boolean isMeta() {
         return this == MCMETA;
     }
-
 
     public boolean isJson() {
         return this == JSON;
     }
 
-
     public boolean isShader() {
         return this == VSH || this == FSH;
     }
 
-
     public boolean isAsset() {
         return isText() || isImage() || isSound() || isJson();
     }
-
 
     /**
      * Get if type is asset or meta<br>
@@ -109,32 +117,9 @@ public enum EAsset {
         return isMeta() || isAsset() || isShader();
     }
 
-
     public boolean isUnknown() {
         return this == UNKNOWN;
     }
-
-
-    public static EAsset forExtension(String ext) {
-        for (final EAsset a : EAsset.values()) {
-            if (a.extension.equalsIgnoreCase(ext)) {
-                return a;
-            }
-        }
-
-        return UNKNOWN;
-    }
-
-
-    public static EAsset forFile(File file) {
-        return forExtension(FileUtils.getExtension(file));
-    }
-
-
-    public static EAsset forFile(String file) {
-        return forExtension(FileUtils.getExtension(file));
-    }
-
 
     /**
      * Get filter for file chooser

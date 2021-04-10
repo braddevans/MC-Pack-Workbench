@@ -37,13 +37,11 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-
 public class TreeDisplay {
 
     public static final AssetTreeGroup EMPTY_ROOT = new AssetTreeGroup(null, "", "");
     public JXTreeTable treeTable;
     public AssetTreeModel treeModel;
-
 
     public TreeDisplay() {
         treeModel = new AssetTreeModel(buildProjectRoot()); // filler empty node
@@ -70,11 +68,12 @@ public class TreeDisplay {
 
                 if (count == 0) {
                     App.getSidePanel().updatePreview(null);
-                } else {
+                }
+                else {
                     final TreePath[] paths = treeTable.getTreeSelectionModel().getSelectionPaths();
                     final TreePath path = paths[paths.length - 1];
 
-                    if (path == null) return;
+                    if (path == null) { return; }
 
                     final AssetTreeNode node = (AssetTreeNode) path.getLastPathComponent();
 
@@ -91,7 +90,7 @@ public class TreeDisplay {
             @Override
             public void mouseExited(MouseEvent e) {
                 // this fix is useful only when mouse-preview is enabled
-                if (Config.PREVIEW_HOVER) tsl.valueChanged(null);
+                if (Config.PREVIEW_HOVER) { tsl.valueChanged(null); }
                 showLeafInStatusBar(null);
             }
 
@@ -100,7 +99,6 @@ public class TreeDisplay {
         treeTable.addMouseMotionListener(new MouseMotionListener() {
 
             private long lastEvent = 0;
-
 
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -119,10 +117,9 @@ public class TreeDisplay {
 
                 final AssetTreeNode node = (AssetTreeNode) path.getLastPathComponent();
 
-                if (Config.PREVIEW_HOVER) App.getSidePanel().updatePreview(node);
+                if (Config.PREVIEW_HOVER) { App.getSidePanel().updatePreview(node); }
                 showLeafInStatusBar(node);
             }
-
 
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -175,7 +172,8 @@ public class TreeDisplay {
 
                             try {
                                 FileUtils.copyFile(file, target);
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e) {
                                 e.printStackTrace();
                             }
                             App.getSidePanel().redrawPreview();
@@ -184,7 +182,8 @@ public class TreeDisplay {
                         }
                     });
                     return true;
-                } catch (UnsupportedFlavorException | IOException e) {
+                }
+                catch (UnsupportedFlavorException | IOException e) {
                     e.printStackTrace();
                 }
                 return false;
@@ -193,7 +192,7 @@ public class TreeDisplay {
             @Override
             public boolean canImport(TransferSupport support) {
                 if (Arrays.asList(support.getDataFlavors()).contains(DataFlavor.javaFileListFlavor) &&
-                        treeTable.getPathForRow(((JTable.DropLocation) support.getDropLocation()).getRow()).getLastPathComponent() instanceof AssetTreeNode) {
+                    treeTable.getPathForRow(((JTable.DropLocation) support.getDropLocation()).getRow()).getLastPathComponent() instanceof AssetTreeNode) {
                     return true;
                 }
                 return super.canImport(support);
@@ -205,13 +204,16 @@ public class TreeDisplay {
     /**
      * Expand all tree nodes
      *
-     * @param tree   subject tree
-     * @param parent parent tree path
-     * @param expand expand or collapse
+     * @param tree
+     *         subject tree
+     * @param parent
+     *         parent tree path
+     * @param expand
+     *         expand or collapse
      */
     private static void expandAll(JTree tree, TreePath parent, boolean expand) {
         final TreeNode node = (TreeNode) parent.getLastPathComponent();
-        if (node == null) return;
+        if (node == null) { return; }
         if (node.getChildCount() > 0) {
             for (final Enumeration<TreeNode> e = node.children(); e.hasMoreElements(); ) {
                 final TreeNode treeNode = e.nextElement();
@@ -222,7 +224,8 @@ public class TreeDisplay {
 
         if (expand) {
             tree.expandPath(parent);
-        } else {
+        }
+        else {
             tree.collapsePath(parent);
         }
     }
@@ -234,7 +237,8 @@ public class TreeDisplay {
 
         if (p == null) {
             root = EMPTY_ROOT;
-        } else {
+        }
+        else {
             final TreeBuilder tb = new TreeBuilder();
             root = tb.buildTree(p);
         }
@@ -269,7 +273,7 @@ public class TreeDisplay {
     }
 
     public void togglePathRecursively(AssetTreeNode node, boolean expand) {
-        if (node.isLeaf()) return;
+        if (node.isLeaf()) { return; }
 
         final TreeNode[] pathObjs = treeModel.getPathToRoot(node);
 
@@ -279,7 +283,7 @@ public class TreeDisplay {
     }
 
     public void togglePathSimple(AssetTreeNode node, boolean expand) {
-        if (node.isLeaf()) return;
+        if (node.isLeaf()) { return; }
 
         final TreeNode[] pathObjs = treeModel.getPathToRoot(node);
 
@@ -287,7 +291,8 @@ public class TreeDisplay {
 
         if (expand) {
             ((JTree) treeTable.getCellRenderer(0, 0)).expandPath(path);
-        } else {
+        }
+        else {
             ((JTree) treeTable.getCellRenderer(0, 0)).collapsePath(path);
         }
     }

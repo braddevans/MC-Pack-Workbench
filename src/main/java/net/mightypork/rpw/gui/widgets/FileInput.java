@@ -1,21 +1,16 @@
 package net.mightypork.rpw.gui.widgets;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
 import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.FileChooser;
 import net.mightypork.rpw.gui.helpers.FileChooser.FileChooserFilter;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * File picker field with file chooser dialog
@@ -32,17 +27,22 @@ public class FileInput extends HBox {
     private FilePickListener filePickListener;
     private boolean mustExist;
 
-
     /**
      * File picker field with file chooser<br>
      * After instantiating, use "setListener" to listen for set files.
      *
-     * @param parent      parent dialog (for opening the filepicker)
-     * @param placeholder field placeholder (shown before file is chosen)
-     * @param pathEnum    path slot (for saving to config)s
-     * @param title       filechooser dialog title
-     * @param filter      file filter (there are constants for it on FileChooser)
-     * @param mustExist   true if the file is required to exist
+     * @param parent
+     *         parent dialog (for opening the filepicker)
+     * @param placeholder
+     *         field placeholder (shown before file is chosen)
+     * @param pathEnum
+     *         path slot (for saving to config)s
+     * @param title
+     *         filechooser dialog title
+     * @param filter
+     *         file filter (there are constants for it on FileChooser)
+     * @param mustExist
+     *         true if the file is required to exist
      */
     public FileInput(Component parent, String placeholder, FilePath pathEnum, String title, FileChooserFilter filter, boolean mustExist) {
         this.mustExist = mustExist;
@@ -66,9 +66,11 @@ public class FileInput extends HBox {
                 if (fc.approved()) {
                     final File f = fc.getSelectedFile();
 
-                    if (f == null) return;
+                    if (f == null) { return; }
 
-                    if (FileInput.this.mustExist && !f.exists()) return; // doesn't exist
+                    if (FileInput.this.mustExist && ! f.exists()) {
+                        return; // doesn't exist
+                    }
 
                     FileInput.this.file = f;
 
@@ -85,9 +87,11 @@ public class FileInput extends HBox {
         // can be changed by setFileChooser()
         if (filter == FileChooser.FOLDERS) {
             this.fc = new FileChooser(parent, pathEnum, title, filter, false, true, false);
-        } else if (filter == FileChooser.FOLDERS_ZIP) {
+        }
+        else if (filter == FileChooser.FOLDERS_ZIP) {
             this.fc = new FileChooser(parent, pathEnum, title, filter, true, true, false);
-        } else {
+        }
+        else {
             this.fc = new FileChooser(parent, pathEnum, title, filter, true, false, false);
         }
 
@@ -100,16 +104,13 @@ public class FileInput extends HBox {
         etchbdr();
     }
 
-
     public void setFileChooser(FileChooser fc) {
         this.fc = fc;
     }
 
-
     public JButton getButton() {
         return buttonPickFile;
     }
-
 
     @Override
     public void setEnabled(boolean state) {
@@ -118,19 +119,16 @@ public class FileInput extends HBox {
         super.setEnabled(state);
     }
 
-
     public void setListener(FilePickListener filePickListener) {
         this.filePickListener = filePickListener;
     }
-
 
     public File getFile() {
         return file;
     }
 
-
     public boolean hasFile() {
-        return file != null && (!mustExist || file.exists());
+        return file != null && (! mustExist || file.exists());
     }
 
     public static interface FilePickListener {

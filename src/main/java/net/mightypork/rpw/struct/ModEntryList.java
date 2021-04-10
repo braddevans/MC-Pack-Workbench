@@ -1,17 +1,14 @@
 package net.mightypork.rpw.struct;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
+import com.google.gson.reflect.TypeToken;
 import net.mightypork.rpw.Const;
 
-import com.google.gson.reflect.TypeToken;
-
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class ModEntryList extends ArrayList<ModEntry> {
 
     private static Type type = null;
-
 
     public static Type getType() {
         if (type == null) {
@@ -21,16 +18,13 @@ public class ModEntryList extends ArrayList<ModEntry> {
         return type;
     }
 
-
     public static ModEntryList fromJson(String json) {
         return Const.GSON.fromJson(json, getType());
     }
 
-
     public String toJson() {
         return Const.GSON.toJson(this);
     }
-
 
     public String getModListName() {
         for (final ModEntry e : this) {

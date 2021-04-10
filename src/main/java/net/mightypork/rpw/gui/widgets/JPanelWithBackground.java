@@ -1,27 +1,21 @@
 package net.mightypork.rpw.gui.widgets;
 
-import java.awt.Graphics;
-import java.awt.Image;
-
-import javax.swing.JPanel;
-
+import javax.swing.*;
+import java.awt.*;
 
 public class JPanelWithBackground extends JPanel {
 
     private Image image;
-
-
-    public void setBackground(Image image) {
-        this.image = image;
-        repaint();
-    }
-
 
     public JPanelWithBackground(Image image) {
         this.image = image;
         repaint();
     }
 
+    public void setBackground(Image image) {
+        this.image = image;
+        repaint();
+    }
 
     @Override
     public void paintComponent(Graphics g) {

@@ -1,14 +1,5 @@
 package net.mightypork.rpw.tasks.sequences;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
@@ -16,19 +7,21 @@ import net.mightypork.rpw.library.MagicSources;
 import net.mightypork.rpw.library.Sources;
 import net.mightypork.rpw.project.Project;
 import net.mightypork.rpw.project.Projects;
-import net.mightypork.rpw.struct.LangEntry;
-import net.mightypork.rpw.struct.PackMcmeta;
-import net.mightypork.rpw.struct.SoundEntry;
-import net.mightypork.rpw.struct.SoundEntryMap;
-import net.mightypork.rpw.struct.SoundSubEntry;
+import net.mightypork.rpw.struct.*;
 import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.tree.assets.EAsset;
 import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
-import net.mightypork.rpw.utils.files.ZipBuilder;
 import net.mightypork.rpw.utils.files.ZipUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Import pack as current project (assuming the project is newly created)
@@ -37,17 +30,18 @@ import net.mightypork.rpw.utils.logging.Log;
  */
 public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
 
-    private File packFile;
     private final Runnable after;
-    private List<String> zipEntries;
-    private ZipFile zip;
     private final Project project;
     private final HashSet<String> alreadyExtracted = new HashSet<String>();
-
+    private File packFile;
+    private List<String> zipEntries;
+    private ZipFile zip;
 
     /**
-     * @param packFile file to load
-     * @param after    runnable executed after it's done
+     * @param packFile
+     *         file to load
+     * @param after
+     *         runnable executed after it's done
      */
     public SequencePopulateProjectFromPack(File packFile, Runnable after) {
         this.packFile = packFile;
@@ -55,12 +49,10 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
         this.project = Projects.getActive();
     }
 
-
     @Override
     public int getStepCount() {
         return 4; // TODO
     }
-
 
     @Override
     public String getStepName(int step) {
@@ -80,7 +72,6 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
         return null;
     }
 
-
     @Override
     protected boolean step(int step) {
         //@formatter:off
@@ -99,12 +90,12 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
         return false;
     }
 
-
     private boolean stepListFile() {
-        if (!packFile.getPath().endsWith(".zip")){
+        if (! packFile.getPath().endsWith(".zip")) {
             try {
                 ZipUtils.zipFolder(packFile.getPath(), packFile.getPath() + ".zip");
-            } catch (Exception e){
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -114,14 +105,14 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
         try {
             zip = new ZipFile(packFile);
             zipEntries = ZipUtils.listZip(zip);
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e(e);
             return false;
         }
 
         return true;
     }
-
 
     private boolean stepMcmetaAndLanguages() {
         File target;
@@ -132,7 +123,7 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
             if (ze_icon != null) {
                 target = new File(project.getProjectDirectory(), "pack.png");
                 ZipUtils.extractZipEntry(zip, ze_icon, target);
-                if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ pack.png");
+                if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ pack.png"); }
                 alreadyExtracted.add("pack.png");
             }
 
@@ -157,7 +148,8 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
 
                         if (Sources.vanilla.doesProvideAsset(ae.getKey())) {
                             // vanilla language, skip (why was it there anyway?)
-                        } else {
+                        }
+                        else {
                             // new language
                             final String entryname = ae.getPath();
                             final ZipEntry ze_langfile = zip.getEntry(entryname);
@@ -175,25 +167,26 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
                                 // mark as extracted
                                 alreadyExtracted.add(entryname);
 
-                                if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ LANG " + entryname);
+                                if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ LANG " + entryname); }
                             }
                         }
                     }
                     try {
                         Projects.getActive().saveConfigFiles();
-                    }catch (IOException exception){
+                    }
+                    catch (IOException exception) {
                         exception.printStackTrace();
                     }
                 }
             }
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e(e);
             return false;
         }
         return true;
     }
-
 
     private boolean stepCustomSounds() {
         File target;
@@ -223,7 +216,8 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
 
                         if (Sources.vanilla.doesProvideAsset(ae.getKey())) {
                             // vanilla sound, skip
-                        } else {
+                        }
+                        else {
                             // new sound
 
                             final String entryname = ae.getPath();
@@ -238,7 +232,7 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
                                 // mark as extracted
                                 alreadyExtracted.add(entryname);
 
-                                if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ SOUND " + entryname);
+                                if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ SOUND " + entryname); }
                             }
 
                         }
@@ -246,13 +240,13 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
                 }
             }
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e(e);
             return false;
         }
         return true;
     }
-
 
     private boolean stepOtherAssets() {
         File target;
@@ -262,15 +256,17 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
                 String s = sorig;
 
                 if (s.contains("__MACOSX") || s.contains(".DS_Store") || s.contains(".fsevents")) {
-                    if (Config.LOG_EXTRACTED_ASSETS) Log.f3("x OSX junk: " + s);
+                    if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("x OSX junk: " + s); }
                     continue;
                 }
 
-                if (alreadyExtracted.contains(s)) continue;
+                if (alreadyExtracted.contains(s)) { continue; }
 
                 final ZipEntry ze = zip.getEntry(s);
 
-                if (ze == null) continue; // garbage
+                if (ze == null) {
+                    continue; // garbage
+                }
 
                 alreadyExtracted.add(s);
 
@@ -291,40 +287,39 @@ public class SequencePopulateProjectFromPack extends AbstractMonitoredSequence {
                     target = new File(project.getAssetsDirectory(), sorig);
 
                     ZipUtils.extractZipEntry(zip, ze, target);
-                    if (!mcmeta) project.setSourceForFile(key, MagicSources.PROJECT);
+                    if (! mcmeta) { project.setSourceForFile(key, MagicSources.PROJECT); }
 
-                    if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ PROJECT " + (mcmeta ? "M " : "") + s);
+                    if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ PROJECT " + (mcmeta ? "M " : "") + s); }
 
-                } else {
+                }
+                else {
                     // extra included file
 
                     target = new File(project.getExtrasDirectory(), s);
                     ZipUtils.extractZipEntry(zip, ze, target);
 
-                    if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ EXTRA " + s);
+                    if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ EXTRA " + s); }
                 }
             }
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e(e);
             return false;
         }
         return true;
     }
 
-
     @Override
     protected String getMonitorHeading() {
         return "Loading Resource Pack";
     }
-
 
     @Override
     protected void doBefore() {
         Log.f1("Loading resource pack to project");
         Log.f3("Pack file: " + packFile);
     }
-
 
     @Override
     protected void doAfter(boolean success) {

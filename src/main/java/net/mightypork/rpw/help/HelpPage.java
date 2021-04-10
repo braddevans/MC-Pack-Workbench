@@ -5,12 +5,10 @@ import net.mightypork.rpw.utils.HtmlBuilder;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
-
 public class HelpPage {
 
     private final String name;
     private String content;
-
 
     public HelpPage(String title, String filename) {
         this.name = title;
@@ -20,16 +18,15 @@ public class HelpPage {
         if (str.length() == 0) {
             Log.w("Missing help page " + filename);
             content = "Page not found.";
-        } else {
+        }
+        else {
             content = HtmlBuilder.markdownToHtmlHelp(str);
         }
     }
 
-
     public String getName() {
         return name;
     }
-
 
     public String getContent() {
         return content;

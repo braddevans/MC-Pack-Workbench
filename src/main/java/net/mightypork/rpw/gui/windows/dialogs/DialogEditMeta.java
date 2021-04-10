@@ -1,17 +1,6 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.swing.JButton;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
+import com.google.gson.JsonParser;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.ClickListener;
 import net.mightypork.rpw.gui.widgets.HBox;
@@ -21,29 +10,42 @@ import net.mightypork.rpw.tree.assets.tree.AssetTreeLeaf;
 import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import com.google.gson.JsonParser;
-
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DialogEditMeta extends DialogEditorBase {
 
+    private final ActionListener loadTemplateListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String res = e.getActionCommand();
+
+            final String text = FileUtils.resourceToString("/data/mcmeta/" + res);
+
+            setTextareaText(text);
+        }
+    };
+    protected AssetTreeLeaf editedNode;
     private JButton btnCancel;
     private JButton btnSave;
     private JButton btnPresets;
     private JButton btnCheck;
     private JPopupMenu presetsPopup;
-    protected AssetTreeLeaf editedNode;
     private String dlgHeading;
-
 
     public DialogEditMeta(AssetTreeLeaf node) {
         this.editedNode = node;
 
         createDialog();
     }
-
 
     @Override
     protected String getTitleText() {
@@ -54,18 +56,17 @@ public class DialogEditMeta extends DialogEditorBase {
         return path + " - RPW McMeta editor";
     }
 
-
     @Override
     protected String getInitialText() {
         try {
             final InputStream in = Projects.getActive().getAssetMetaStream(editedNode.getAssetKey());
             return FileUtils.streamToString(in);
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.e(e);
             return "";
         }
     }
-
 
     @Override
     protected void buildButtons(HBox buttons) {
@@ -85,7 +86,6 @@ public class DialogEditMeta extends DialogEditorBase {
         presetsPopup = buildPresetsPopup();
         buttons.add(presetsPopup);
     }
-
 
     private JPopupMenu buildPresetsPopup() {
         final JPopupMenu popup = new JPopupMenu();
@@ -180,7 +180,6 @@ public class DialogEditMeta extends DialogEditorBase {
         return popup;
     }
 
-
     @Override
     protected void addActions() {
         btnCancel.addActionListener(closeListener);
@@ -196,7 +195,8 @@ public class DialogEditMeta extends DialogEditorBase {
                 try {
                     jp.parse(text);
                     Alerts.info(DialogEditMeta.this, "Check JSON", "Entered code is (probably) valid.");
-                } catch (final Exception er) {
+                }
+                catch (final Exception er) {
                     Alerts.warning(DialogEditMeta.this, "Check JSON", "Entered code contains\n a SYNTAX ERROR!");
                 }
 
@@ -214,7 +214,8 @@ public class DialogEditMeta extends DialogEditorBase {
                 try {
                     FileUtils.stringToFile(file, text);
                     closeDialog();
-                } catch (final IOException e1) {
+                }
+                catch (final IOException e1) {
                     Log.e(e1);
 
                     Alerts.error(self(), "Could not save file.");
@@ -226,7 +227,6 @@ public class DialogEditMeta extends DialogEditorBase {
         btnPresets.addMouseListener(new ClickListener() {
 
             boolean first = true;
-
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -241,24 +241,10 @@ public class DialogEditMeta extends DialogEditorBase {
         });
     }
 
-    private final ActionListener loadTemplateListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String res = e.getActionCommand();
-
-            final String text = FileUtils.resourceToString("/data/mcmeta/" + res);
-
-            setTextareaText(text);
-        }
-    };
-
-
     @Override
     protected void configureTextarea(RSyntaxTextArea ta) {
         configureTextareaJSON(ta);
     }
-
 
     @Override
     protected String getFileName() {

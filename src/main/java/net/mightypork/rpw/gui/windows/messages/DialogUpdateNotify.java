@@ -1,14 +1,5 @@
 package net.mightypork.rpw.gui.windows.messages;
 
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.gui.Gui;
@@ -18,13 +9,14 @@ import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.utils.HtmlBuilder;
 
+import javax.swing.*;
+import java.awt.*;
 
 public class DialogUpdateNotify extends RpwDialog {
 
-    private JButton buttonOK;
     private final String version;
     private final String textMd;
-
+    private JButton buttonOK;
 
     public DialogUpdateNotify(String version, String textMd) {
         super(App.getFrame(), "Your RPW is outdated");
@@ -34,7 +26,6 @@ public class DialogUpdateNotify extends RpwDialog {
 
         createDialog();
     }
-
 
     @Override
     protected JComponent buildGui() {
@@ -73,7 +64,7 @@ public class DialogUpdateNotify extends RpwDialog {
         hb.add(btn = new JButton("GitHub", Icons.MENU_GITHUB));
         btn.setActionCommand(Paths.URL_GITHUB_RELEASES);
         btn.addActionListener(Gui.openUrlListener);
-       //btn.addActionListener(closeListener);
+        //btn.addActionListener(closeListener);
 
         hb.glue();
 
@@ -89,7 +80,6 @@ public class DialogUpdateNotify extends RpwDialog {
 
         return vb;
     }
-
 
     @Override
     protected void addActions() {

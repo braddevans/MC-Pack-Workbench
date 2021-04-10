@@ -1,12 +1,10 @@
 package net.mightypork.rpw.struct;
 
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-
+import com.google.gson.reflect.TypeToken;
 import net.mightypork.rpw.Const;
 
-import com.google.gson.reflect.TypeToken;
-
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 
 public class FileObjectIndex {
 
@@ -14,7 +12,6 @@ public class FileObjectIndex {
 
     public boolean virtual = false;
     public LinkedHashMap<String, FileObject> objects = null;
-
 
     public static Type getType() {
         if (type == null) {
@@ -24,11 +21,9 @@ public class FileObjectIndex {
         return type;
     }
 
-
     public static FileObjectIndex fromJson(String json) {
         return Const.GSON.fromJson(json, getType());
     }
-
 
     public String toJson() {
         return Const.GSON.toJson(this);

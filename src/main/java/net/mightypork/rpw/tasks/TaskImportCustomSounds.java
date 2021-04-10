@@ -1,8 +1,5 @@
 package net.mightypork.rpw.tasks;
 
-import java.io.File;
-import java.io.IOException;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.gui.helpers.FileChooser;
@@ -11,6 +8,8 @@ import net.mightypork.rpw.tree.filesystem.DirectoryFsTreeNode;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.io.File;
+import java.io.IOException;
 
 public class TaskImportCustomSounds {
 
@@ -20,7 +19,7 @@ public class TaskImportCustomSounds {
 
         fc.showDialog("Open");
 
-        if (!fc.approved()) {
+        if (! fc.approved()) {
             return;
         }
 
@@ -40,9 +39,10 @@ public class TaskImportCustomSounds {
                 FileUtils.copyFile(f, new File(target, f.getName()));
             }
 
-            if (afterImport != null) afterImport.run();
+            if (afterImport != null) { afterImport.run(); }
 
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.e(e);
             Alerts.error(App.getFrame(), "Something went wrong during import.");
         }

@@ -1,21 +1,13 @@
 package net.mightypork.rpw.tasks;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Flags;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.gui.Gui;
-import net.mightypork.rpw.gui.windows.WindowSplash;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.gui.windows.WindowMain;
+import net.mightypork.rpw.gui.windows.WindowSplash;
 import net.mightypork.rpw.gui.windows.dialogs.*;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.gui.windows.messages.DialogChangelog;
@@ -39,6 +31,11 @@ import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Tasks class<br>
@@ -51,7 +48,6 @@ public class Tasks {
     private static int LAST_TASK = 0;
     private static HashMap<Integer, Boolean> TASKS_RUNNING = new HashMap<Integer, Boolean>();
 
-
     private static int startTask() {
         final int task = LAST_TASK++;
         TASKS_RUNNING.put(task, true);
@@ -59,28 +55,27 @@ public class Tasks {
         return task;
     }
 
-
     private static int stopTask(int task) {
         TASKS_RUNNING.put(task, false);
         return task;
     }
 
-
     /**
      * Is task still running?
      *
-     * @param task task ID
+     * @param task
+     *         task ID
+     *
      * @return is running
      */
     public static boolean isRunning(int task) {
-        if (task == -1) return false;
+        if (task == - 1) { return false; }
 
         final Boolean state = TASKS_RUNNING.get(task);
-        if (state == null || state == false) return false;
+        if (state == null || state == false) { return false; }
 
         return true;
     }
-
 
     public static int taskBuildMainWindow() {
         final int task = Tasks.startTask();
@@ -98,7 +93,7 @@ public class Tasks {
 
                             App.inst.window = new WindowMain();
 
-                            Flags.PROJECT_CHANGED = !Config.CLOSED_WITH_PROJECT_OPEN;
+                            Flags.PROJECT_CHANGED = ! Config.CLOSED_WITH_PROJECT_OPEN;
                             Tasks.taskOnProjectChanged();
 
                             App.inst.splashWindow.hide();
@@ -108,7 +103,8 @@ public class Tasks {
                             // -- task end --
                         }
                     });
-                } catch (final Exception e) {
+                }
+                catch (final Exception e) {
                     Log.e(e);
                 }
             }
@@ -116,7 +112,6 @@ public class Tasks {
 
         return task;
     }
-
 
     public static int taskBuildPlaceholderMainWindow() {
         final int task = Tasks.startTask();
@@ -139,7 +134,8 @@ public class Tasks {
                             // -- task end --
                         }
                     });
-                } catch (final Exception e) {
+                }
+                catch (final Exception e) {
                     Log.e(e);
                 }
             }
@@ -147,7 +143,6 @@ public class Tasks {
 
         return task;
     }
-
 
     public static int taskReloadSources(final Runnable after) {
         final int task = Tasks.startTask();
@@ -162,7 +157,7 @@ public class Tasks {
                 Sources.initLibrary();
                 Tasks.taskTreeRedraw();
 
-                if (after != null) after.run();
+                if (after != null) { after.run(); }
 
                 Tasks.stopTask(task);
 
@@ -173,26 +168,21 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskTreeCollapse() {
         App.getTreeDisplay().treeTable.collapseAll();
     }
-
 
     public static void taskTreeExpand() {
         App.getTreeDisplay().treeTable.expandAll();
     }
 
-
     public static void taskDialogAbout() {
         Gui.open(new DialogAbout());
     }
 
-
     public static void taskDialogExport() {
         Gui.open(new DialogExport());
     }
-
 
     public static void taskDialogHelp() {
         Alerts.loading(true);
@@ -201,16 +191,13 @@ public class Tasks {
         dialog.setVisible(true);
     }
 
-
     public static void taskDialogLog() {
         Gui.open(new DialogRuntimeLog());
     }
 
-
     public static void taskDialogImportPack() {
         Gui.open(new DialogImportPack());
     }
-
 
     public static void taskTreeSourceRename(String oldSource, String newSource) {
         final AssetTreeNode root = App.getTreeDisplay().treeModel.getRoot();
@@ -222,20 +209,17 @@ public class Tasks {
         Projects.markChange();
     }
 
-
     public static void taskTreeRedraw() {
         final AssetTreeNode root = App.getTreeDisplay().treeModel.getRoot();
         App.getTreeDisplay().treeModel.notifyNodeChanged(root);
     }
 
-
     public static void taskStoreProjectChanges() {
         taskStoreProjectChanges(Projects.getActive());
     }
 
-
     public static void taskStoreProjectChanges(Project proj) {
-        if (proj == null) return;
+        if (proj == null) { return; }
 
         final AssetTreeProcessor proc = new SaveToProjectNodeProcessor(proj);
         final AssetTreeNode root = App.getTreeDisplay().treeModel.getRoot();
@@ -246,22 +230,21 @@ public class Tasks {
 
         try {
             proj.saveConfigFiles();
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.e(e);
         }
 
         Projects.clearChangeFlag();
     }
 
-
     public static void taskAskRevertProject() {
         if (Alerts.askYesNo(App.getFrame(), "Confirm Revert", "This will undo ALL changes in the project since\n" + "the last save, even done by external programs.\n\n"
-                + "Are you sure you want to do this?")) {
+                                                              + "Are you sure you want to do this?")) {
 
             Tasks.taskRevertProject();
         }
     }
-
 
     public static int taskRevertProject() {
         final int task = Tasks.startTask();
@@ -288,7 +271,6 @@ public class Tasks {
         return task;
     }
 
-
     public static int taskDeleteIdenticalToVanilla() {
         final int task = Tasks.startTask();
 
@@ -312,7 +294,6 @@ public class Tasks {
         return task;
     }
 
-
     public static int taskExportProject(final File target, final Runnable afterExport) {
         final int task = Tasks.startTask();
 
@@ -335,10 +316,9 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskAskToSaveIfChanged(Runnable afterSave) {
-        if (Flags.GOING_FOR_HALT || !Projects.isOpen()) {
-            if (afterSave != null) afterSave.run();
+        if (Flags.GOING_FOR_HALT || ! Projects.isOpen()) {
+            if (afterSave != null) { afterSave.run(); }
             return;
         }
 
@@ -361,24 +341,27 @@ public class Tasks {
 
                 Log.f3("- Config option AUTO_SAVE enabled, saving.");
                 taskSaveProject();
-            } else {
+            }
+            else {
 
                 //@formatter:off
                 final int choice = Alerts.askYesNoCancel(
                         App.getFrame(),
                         "Save changes",
                         "There are some changes in the project. Save?\n\n"
-                                + "(Hate this? Enable auto-save in Options.)\n"
+                        + "(Hate this? Enable auto-save in Options.)\n"
                 );
                 //@formatter:on
 
                 if (choice == JOptionPane.CANCEL_OPTION) {
                     Log.f3("- User choice CANCEL");
                     return; // cancelled
-                } else if (choice == JOptionPane.OK_OPTION) {
+                }
+                else if (choice == JOptionPane.OK_OPTION) {
                     Log.f3("- User choice SAVE");
                     taskSaveProject();
-                } else {
+                }
+                else {
                     Log.f3("- User choice DISCARD");
 
                     //@formatter:off
@@ -386,13 +369,14 @@ public class Tasks {
                             App.getFrame(),
                             "Confirm Revert",
                             "You selected to discard changes.\n"
-                                    + "This will undo ALL changes in the project since\n"
-                                    + "the last save, even done by external programs.\n\n"
-                                    + "Are you sure you want to do this?")) {
+                            + "This will undo ALL changes in the project since\n"
+                            + "the last save, even done by external programs.\n\n"
+                            + "Are you sure you want to do this?")) {
 
                         Tasks.taskRevertProject();
 
-                    } else {
+                    }
+                    else {
                         return; // do not call handler
                     }
                     //@formatter:on
@@ -400,9 +384,8 @@ public class Tasks {
             }
         }
 
-        if (afterSave != null) afterSave.run();
+        if (afterSave != null) { afterSave.run(); }
     }
-
 
     public static int taskImportReplacement(final AssetTreeLeaf node) {
         final int task = Tasks.startTask();
@@ -432,7 +415,6 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskCloseProject() {
         taskAskToSaveIfChanged(new Runnable() {
 
@@ -444,7 +426,6 @@ public class Tasks {
         });
     }
 
-
     public static void taskCloseProjectNoRebuild() {
         taskAskToSaveIfChanged(new Runnable() {
 
@@ -455,9 +436,8 @@ public class Tasks {
         });
     }
 
-
     public static void taskOnProjectChanged() {
-        if (!Flags.PROJECT_CHANGED) {
+        if (! Flags.PROJECT_CHANGED) {
             return;
         }
         Flags.PROJECT_CHANGED = false;
@@ -469,20 +449,17 @@ public class Tasks {
         taskRedrawRecentProjectsMenu();
     }
 
-
     public static void taskEditModFilters() {
         final File f = OsUtils.getAppDir(Paths.FILE_CFG_MODFILTERS);
 
         editTextFile(f);
     }
 
-
     public static void taskEditModGroups() {
         final File f = OsUtils.getAppDir(Paths.FILE_CFG_MODGROUPS);
 
         editTextFile(f);
     }
-
 
     private static void editTextFile(File f) {
         if (Config.USE_INTERNAL_META_EDITOR) {
@@ -492,20 +469,20 @@ public class Tasks {
                 dlg = new DialogEditText(f);
                 Alerts.loading(false);
                 dlg.setVisible(true);
-            } catch (final IOException e) {
+            }
+            catch (final IOException e) {
                 Log.e(e);
             }
-        } else {
+        }
+        else {
             DesktopApi.editText(f);
         }
     }
-
 
     public static void taskTreeSaveAndRebuild() {
         Tasks.taskStoreProjectChanges();
         Tasks.taskTreeRebuild();
     }
-
 
     public static void taskSaveProject() {
         Tasks.taskStoreProjectChanges();
@@ -513,17 +490,14 @@ public class Tasks {
         Projects.getActive().createBackup();
     }
 
-
     public static void taskTreeRebuild() {
-        if (App.getTreeDisplay() != null) App.getTreeDisplay().updateRoot();
-        if (App.getSidePanel() != null) App.getSidePanel().updatePreview(null);
+        if (App.getTreeDisplay() != null) { App.getTreeDisplay().updateRoot(); }
+        if (App.getSidePanel() != null) { App.getSidePanel().updatePreview(null); }
     }
-
 
     public static void taskDeleteEmptyDirsFromProject() {
         FileUtils.deleteEmptyDirs(Projects.getActive().getAssetsDirectory());
     }
-
 
     public static int taskDeleteProject(final String identifier) {
         final int task = Tasks.startTask();
@@ -545,7 +519,6 @@ public class Tasks {
         return task;
     }
 
-
     public static int taskCreateModConfigFiles() {
         final int task = Tasks.startTask();
 
@@ -564,7 +537,6 @@ public class Tasks {
 
         return task;
     }
-
 
     public static int taskLoadVanillaStructure() {
         final int task = Tasks.startTask();
@@ -585,18 +557,16 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskConfigureMinecraftAssets() {
-        if (!Projects.isOpen()) return;
+        if (! Projects.isOpen()) { return; }
 
         Gui.open(new DialogConfigureMinecraftAssets());
     }
 
-
     public static int taskExtractAssets() {
         final String version = TaskExtractAssets.getUserChoice(false);
 
-        if (version == null) return -1;
+        if (version == null) { return - 1; }
 
         Projects.getActive().setCurrentMcVersion(version);
         Config.LIBRARY_VERSION = version;
@@ -625,7 +595,6 @@ public class Tasks {
         return task;
     }
 
-
     public static int taskExtractAssetsOrDie() {
         final String version = TaskExtractAssets.getUserChoice(true);
 
@@ -633,11 +602,11 @@ public class Tasks {
             //@formatter:off
             App.die(
                     "RPW cannot run without Minecraft assets.\n" +
-                            "Aborting."
+                    "Aborting."
             );
             //@formatter:on
 
-            return -1;
+            return - 1;
         }
 
         final int task = Tasks.startTask();
@@ -659,7 +628,6 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskExit() {
         taskAskToSaveIfChanged(new Runnable() {
 
@@ -674,16 +642,13 @@ public class Tasks {
         });
     }
 
-
     public static void taskNewProject() {
         taskDialogNewProject();
     }
 
-
     public static void taskOpenProject() {
         taskDialogManageProjects();
     }
-
 
     public static void taskOpenProject(final String name) {
         taskAskToSaveIfChanged(new Runnable() {
@@ -711,7 +676,6 @@ public class Tasks {
         });
     }
 
-
     public static void taskSaveProjectAs(String name, String title) {
         Log.f1("Saving project '" + Projects.getActive().getName() + "' as '" + name + "'");
 
@@ -725,7 +689,8 @@ public class Tasks {
 
         try {
             FileUtils.copyDirectory(currentDir, targetDir, FileUtils.NoGitFilter, null);
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.e("An error occured while\ncopying project files.");
             FileUtils.delete(targetDir, true); // cleanup
             return;
@@ -742,89 +707,75 @@ public class Tasks {
         taskOnProjectChanged();
     }
 
-
     public static void taskDeleteResourcepack(String packname) {
         final File f = new File(OsUtils.getAppDir(Paths.DIR_RESOURCEPACKS), packname);
         FileUtils.delete(f, true);
     }
 
-
     public static void taskDialogProjectProperties() {
         Gui.open(new DialogProjectProperties());
     }
 
-
     public static void taskDialogProjectSummary() {
-        if (!Projects.isOpen()) {
+        if (! Projects.isOpen()) {
             Alerts.error(null, "No project is open!");
-        } else {
+        }
+        else {
             Gui.open(new DialogProjectSummary());
         }
     }
-
 
     public static void taskDialogManageLibrary() {
         Gui.open(new DialogManageLibrary());
     }
 
-
     public static void taskDialogManageProjects() {
         Gui.open(new DialogManageProjects());
     }
-
 
     public static void taskDialogNewProject() {
         Gui.open(new DialogNewProject());
     }
 
-
     public static void taskDialogSaveAs() {
         Gui.open(new DialogSaveAs());
     }
-
 
     public static void taskDialogSettings() {
         Gui.open(new DialogConfigureEditors());
     }
 
-
     public static void taskRedrawRecentProjectsMenu() {
         App.getMenu().updateRecentProjects();
     }
-
 
     public static void taskOnProjectPropertiesChanged() {
         taskUpdateTitlebar();
         App.getSidePanel().updateProjectInfo();
     }
 
-
     public static void taskUpdateTitlebar() {
         App.setTitle(App.getWindowTitle());
     }
-
 
     public static void taskEditAsset(AssetTreeLeaf node) {
         TaskModifyAsset.edit(node, false);
     }
 
-
     public static void taskEditModel(AssetTreeLeaf node) {
         TaskModifyAsset.editModel(node);
     }
 
-
     public static void taskEditMeta(AssetTreeLeaf node) {
         TaskModifyAsset.edit(node, true);
     }
-
 
     public static void taskOpenInFileManager(AssetTreeLeaf node) {
         if (node == null) {
             Log.e("Tried to open folder for null leaf.");
             return;
         }
-        if (!node.isAssetProvidedByProject()) {
+        if (! node.isAssetProvidedByProject()) {
             Log.e("Tried to open node for leaf not in project");
             return;
         }
@@ -833,36 +784,32 @@ public class Tasks {
 
         File dir = f.getParentFile();
 
-        if (!DesktopApi.open(dir)) {
+        if (! DesktopApi.open(dir)) {
             Alerts.error(App.getFrame(), "Failed to open folder, platform not\nsupported by the Java API. Sorry.");
         }
     }
-
 
     public static void taskDialogManageMcPacks() {
         Gui.open(new DialogManageMcPacks());
     }
 
-
     public static void taskOpenProjectFolder() {
-        if (Projects.isOpen() && !DesktopApi.open(Projects.getActive().getProjectDirectory())) {
+        if (Projects.isOpen() && ! DesktopApi.open(Projects.getActive().getProjectDirectory())) {
             //@formatter:off
             Alerts.error(
                     App.getFrame(),
                     "Could not open directory, platform\n" +
-                            "not supported by the Java API.\n" +
-                            "\n" +
-                            "Check log file for details."
+                    "not supported by the Java API.\n" +
+                    "\n" +
+                    "Check log file for details."
             );
             //@formatter:on
         }
     }
 
-
     public static void checkUpdate() {
         TaskCheckUpdate.run();
     }
-
 
     public static void taskLoadHelp() {
         (new Thread(new Runnable() {
@@ -871,12 +818,12 @@ public class Tasks {
             public void run() {
                 HelpStore.load();
             }
-        })).start();
+        })
+        ).start();
     }
 
-
     public static void taskOpenSoundWizard() {
-        if (!Projects.isOpen()) return;
+        if (! Projects.isOpen()) { return; }
 
         Alerts.loading(true);
         final DialogSoundWizard dlg = new DialogSoundWizard();
@@ -884,20 +831,17 @@ public class Tasks {
         dlg.setVisible(true);
     }
 
-
     public static void taskManageLanguages() {
-        if (!Projects.isOpen()) return;
+        if (! Projects.isOpen()) { return; }
 
         Gui.open(new DialogManageLanguages());
     }
 
-
     public static void taskCreateLanguage() {
-        if (!Projects.isOpen()) return;
+        if (! Projects.isOpen()) { return; }
 
         Gui.open(new DialogNewLanguage());
     }
-
 
     public static void taskShowChangelog() {
         if (VersionUtils.shouldShowChangelog()) {
@@ -905,11 +849,9 @@ public class Tasks {
         }
     }
 
-
     public static void taskShowChangelogForced() {
         Gui.open(new DialogChangelog());
     }
-
 
     public static int taskPopulateProjectFromPack(final File pack, final Runnable after) {
         final int task = Tasks.startTask();
@@ -931,11 +873,9 @@ public class Tasks {
         return task;
     }
 
-
     public static void taskDialogExportToStitch() {
         Gui.open(new com.pixbits.rpw.stitcher.DialogExportStitch());
     }
-
 
     public static void taskDialogImportFromStitch() {
         Gui.open(new com.pixbits.rpw.stitcher.DialogImportStitch());

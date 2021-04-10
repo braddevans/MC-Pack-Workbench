@@ -1,33 +1,5 @@
 package net.mightypork.rpw.gui.widgets;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.Box.Filler;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.TitledBorder;
-
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -43,16 +15,30 @@ import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
 import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
-
 import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTitledSeparator;
 
+import javax.swing.*;
+import javax.swing.Box.Filler;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class SidePanel {
 
+    private static final String IMAGE = "IMAGE";
+    private static final String TEXT = "TEXT";
+    private static final String AUDIO = "AUDIO";
+    private static final String MODEL = "MODEL";
     public JXPanel panel;
-
     private Box infoBox;
     private JXLabel projectName;
     private JXLabel projectBase;
@@ -60,44 +46,29 @@ public class SidePanel {
     private JButton buttonOpenBase;
     private JButton buttonEditProps;
     private JLabel projectIconLabel;
-
     private Box previewBox;
     private JPanel previewPanel;
     private CardLayout previewCardLayout;
-
     private JTextArea previewText;
     private TitledBorder previewTextBorder;
-
     private JTextArea previewModel;
     private TitledBorder previewModelBorder;
-
     private JLabel previewImage;
     private TitledBorder previewImageBorder;
     private JPanelWithBackground previewImageBg;
-
     private JButton btnEditI;
     private JButton btnMetaI;
     private JButton btnReplaceI;
-
     private JButton btnEditT;
     private JButton btnReplaceT;
-
     private JButton btnEditA;
     private JButton btnReplaceA;
-
     private JButton btnEditM;
-
-    private static final String IMAGE = "IMAGE";
-    private static final String TEXT = "TEXT";
-    private static final String AUDIO = "AUDIO";
-    private static final String MODEL = "MODEL";
-
     private AssetTreeLeaf displayedLeaf;
 
     private TitledBorder previewAudioBorder;
 
     private Border previewBorder;
-
 
     public SidePanel() {
         JXPanel projectCard = new JXPanel();
@@ -142,12 +113,10 @@ public class SidePanel {
         redrawPreview();
     }
 
-
     public void showCard(String name) {
         CardLayout cl = (CardLayout) (panel.getLayout());
         cl.show(panel, name);
     }
-
 
     private Box createPreviewBox() {
         previewBorder = new CompoundBorder(BorderFactory.createLineBorder(new Color(0x666666)), BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -169,7 +138,6 @@ public class SidePanel {
         previewPanel = new JPanel(previewCardLayout = new CardLayout());
         previewPanel.setAlignmentX(0);
         previewCardLayout.setVgap(0);
-
 
         vb2 = new VBox();
         vb2.setAlignmentX(0);
@@ -234,7 +202,6 @@ public class SidePanel {
 
         previewPanel.add(vb2, IMAGE);
 
-
         vb2 = new VBox();
         vb2.setAlignmentX(0);
 
@@ -254,7 +221,6 @@ public class SidePanel {
 
         vb2.add(hb);
         vb2.gap();
-
 
         hb = new HBox();
         hb.setAlignmentX(0);
@@ -291,7 +257,6 @@ public class SidePanel {
         vb2.glue();
         previewPanel.add(vb2, TEXT);
 
-
         vb2 = new VBox();
         vb2.setAlignmentX(0);
 
@@ -300,7 +265,7 @@ public class SidePanel {
         hb = new HBox();
         hb.setAlignmentX(0);
 
-        btnEditM = new JButton ("Edit model", Icons.MENU_EDIT);
+        btnEditM = new JButton("Edit model", Icons.MENU_EDIT);
         btnEditT = new JButton("Edit text", Icons.MENU_EDIT);
         btnReplaceT = new JButton("Replace", Icons.MENU_IMPORT_BOX);
 
@@ -314,7 +279,6 @@ public class SidePanel {
 
         vb2.add(hb);
         vb2.gap();
-
 
         hb = new HBox();
         hb.setAlignmentX(0);
@@ -350,7 +314,6 @@ public class SidePanel {
 
         vb2.glue();
         previewPanel.add(vb2, MODEL);
-
 
         vb2 = new VBox();
         vb2.setAlignmentX(0);
@@ -394,14 +357,12 @@ public class SidePanel {
         vb2.glue();
         previewPanel.add(vb2, AUDIO);
 
-
         vbox.add(previewPanel);
 
         //@formatter:on
 
         return vbox;
     }
-
 
     private Box createProjectInfoBox() {
         //@formatter:off
@@ -486,7 +447,6 @@ public class SidePanel {
         return vb;
     }
 
-
     public void updateProjectInfo() {
         final Project p = Projects.getActive();
 
@@ -504,7 +464,8 @@ public class SidePanel {
 
             infoBox.setVisible(true);
 
-        } else {
+        }
+        else {
             showCard("empty");
             // infoBox.setVisible(false);
             // previewBox.setVisible(false);
@@ -512,23 +473,21 @@ public class SidePanel {
         }
     }
 
-
     public void redrawPreview() {
         updatePreview(displayedLeaf);
     }
 
-
-    public void setMcVersion () {
+    public void setMcVersion() {
         mcVersion.setText("Minecraft version: " + Config.LIBRARY_VERSION);
     }
-
 
     public void updatePreview(AssetTreeNode selected) {
         if (selected == null || selected instanceof AssetTreeGroup) {
             previewBox.setVisible(false);
             displayedLeaf = null;
 
-        } else {
+        }
+        else {
             previewBox.setVisible(true);
 
             final AssetTreeLeaf leaf = (AssetTreeLeaf) selected;
@@ -548,7 +507,8 @@ public class SidePanel {
                 final String key = leaf.getAssetKey();
                 if (key.startsWith("assets.minecraft.textures.font.")) {
                     previewImageBg.setBackground(Icons.TRANSPARENT_FONTS.getImage());
-                } else {
+                }
+                else {
                     previewImageBg.setBackground(Icons.TRANSPARENT.getImage());
                 }
 
@@ -557,7 +517,8 @@ public class SidePanel {
                     in = Sources.getAssetStream(source, leaf.getAssetKey());
                     if (in == null) {
                         previewImage.setIcon(null);
-                    } else {
+                    }
+                    else {
                         final ImageIcon i = Icons.getIconFromStream(in, new Dimension(256, 256));
 
                         previewImage.setIcon(i);
@@ -572,18 +533,22 @@ public class SidePanel {
 
                     previewCardLayout.show(previewPanel, IMAGE);
 
-                } catch (final IOException e) {
+                }
+                catch (final IOException e) {
                     Log.e(e);
                     return;
-                } finally {
+                }
+                finally {
                     try {
-                        if (in != null) in.close();
-                    } catch (final IOException e1) {
+                        if (in != null) { in.close(); }
+                    }
+                    catch (final IOException e1) {
                         e1.printStackTrace();
                     }
                 }
 
-            } else if (type.isText()) {
+            }
+            else if (type.isText()) {
                 // text asset
                 String text;
 
@@ -591,10 +556,11 @@ public class SidePanel {
                     in = Sources.getAssetStream(leaf.resolveAssetSource(), leaf.getAssetKey());
                     text = FileUtils.streamToString(in, 100);
 
-                    if (path.contains("models") && path.endsWith(".json")){
+                    if (path.contains("models") && path.endsWith(".json")) {
                         if (in == null) {
                             previewModel.setText("");
-                        } else {
+                        }
+                        else {
                             previewModel.setText(text);
 
                             previewModelBorder.setTitle(fname);
@@ -603,10 +569,12 @@ public class SidePanel {
                         previewModel.setCaretPosition(0); // scroll to top
 
                         previewCardLayout.show(previewPanel, MODEL);
-                    } else {
+                    }
+                    else {
                         if (in == null) {
                             previewText.setText("");
-                        } else {
+                        }
+                        else {
                             previewText.setText(text);
 
                             previewTextBorder.setTitle(fname);
@@ -616,24 +584,29 @@ public class SidePanel {
 
                         previewCardLayout.show(previewPanel, TEXT);
                     }
-                } catch (final IOException e) {
+                }
+                catch (final IOException e) {
                     Log.e(e);
                     return;
-                } finally {
+                }
+                finally {
                     try {
-                        if (in != null) in.close();
-                    } catch (final IOException e1) {
+                        if (in != null) { in.close(); }
+                    }
+                    catch (final IOException e1) {
                         e1.printStackTrace();
                     }
                 }
 
-            } else if (type.isSound()) {
+            }
+            else if (type.isSound()) {
                 // sound asset
                 previewAudioBorder.setTitle(fname);
 
                 previewCardLayout.show(previewPanel, AUDIO);
 
-            } else {
+            }
+            else {
                 // undisplayable
                 previewBox.setVisible(false);
             }
@@ -641,7 +614,6 @@ public class SidePanel {
             previewBox.repaint();
         }
     }
-
 
     private void addActions() {
         buttonOpenBase.addActionListener(new ActionListener() {

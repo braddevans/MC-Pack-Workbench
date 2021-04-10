@@ -1,38 +1,24 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.ScrollPaneConstants;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.widgets.HBox;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Style;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
-import org.fife.ui.rsyntaxtextarea.TokenTypes;
+import org.fife.ui.rsyntaxtextarea.*;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import javax.swing.*;
+import java.awt.*;
 
 public abstract class DialogEditorBase extends RpwDialog {
 
     private RSyntaxTextArea ta;
     private HBox buttonsBox;
 
-
     public DialogEditorBase() {
         super(App.getFrame(), "Text Editor"); // dummy title
 
     }
-
 
     @Override
     protected final JComponent buildGui() {
@@ -71,34 +57,26 @@ public abstract class DialogEditorBase extends RpwDialog {
         return vb;
     }
 
-
     protected abstract String getFileName();
-
 
     public Box getButtonsBox() {
         return buttonsBox;
     }
 
-
     protected abstract String getTitleText();
 
-
     protected abstract void buildButtons(HBox buttons);
-
 
     @Override
     protected final void initGui() {
         setTextareaText(getInitialText());
     }
 
-
     protected RSyntaxTextArea getTextArea() {
         return ta;
     }
 
-
     protected abstract String getInitialText();
-
 
     private RSyntaxTextArea buildTextArea() {
         final RSyntaxTextArea ta = new RSyntaxTextArea(20, 60);
@@ -110,9 +88,7 @@ public abstract class DialogEditorBase extends RpwDialog {
         return ta;
     }
 
-
     protected abstract void configureTextarea(RSyntaxTextArea textarea);
-
 
     protected void configureTextareaJSON(RSyntaxTextArea ta) {
         ta.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
@@ -183,16 +159,13 @@ public abstract class DialogEditorBase extends RpwDialog {
         ta.setFont(font);
     }
 
-
     protected void configureTextareaPlain(RSyntaxTextArea ta) {
         configureTextareaBasic(ta, SyntaxConstants.SYNTAX_STYLE_NONE);
     }
 
-
     protected void configureTextareaConfig(RSyntaxTextArea ta) {
         configureTextareaBasic(ta, SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
     }
-
 
     private void configureTextareaBasic(RSyntaxTextArea ta, String mime) {
         ta.setSyntaxEditingStyle(mime);
@@ -258,10 +231,8 @@ public abstract class DialogEditorBase extends RpwDialog {
         ta.setFont(font);
     }
 
-
     @Override
     protected abstract void addActions();
-
 
     protected final void setTextareaText(String text) {
         ta.setText(text);

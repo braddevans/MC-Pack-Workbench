@@ -1,18 +1,5 @@
 package net.mightypork.rpw.gui;
 
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import net.coobird.thumbnailator.ThumbnailParameter;
 import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.geometry.AbsoluteSize;
@@ -30,6 +17,15 @@ import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 
 public class Icons {
     public static ImageIcon MENU_NEW;
@@ -118,7 +114,6 @@ public class Icons {
         WINDOW = loadImage(Paths.DATA_DIR_IMAGES + "window-icon-2.png");
     }
 
-
     public static void init() {
         Log.f2("Loading GUI icons");
 
@@ -130,7 +125,6 @@ public class Icons {
         IMAGE_ERROR_64 = loadImage(imgPath + "image-error-64.png");
         IMAGE_ERROR_128 = loadImage(imgPath + "image-error-128.png");
 
-
         IMAGE_NOT_FOUND = IMAGE_ERROR_16;
 
         MENU_NEW = loadImage(imgPath + "menu/new.png");
@@ -141,7 +135,6 @@ public class Icons {
         MENU_MANAGE = loadImage(imgPath + "menu/manage.png");
         MENU_EXPORT = loadImage(imgPath + "menu/export.png");
         MENU_UNDO = loadImage(imgPath + "menu/undo.png");
-
 
         MENU_REVERT = MENU_UNDO;
 
@@ -196,11 +189,9 @@ public class Icons {
         TREE_FILE_FONT = loadImage(imgPath + "tree/file-font.png");
         TREE_FILE_TECH = loadImage(imgPath + "tree/file-tech.png");
 
-
         IMAGE_NOT_FOUND = IMAGE_ERROR_64;
 
         AUDIO = loadImage(imgPath + "sound-icon.png");
-
 
         IMAGE_NOT_FOUND = IMAGE_ERROR_128;
 
@@ -208,7 +199,6 @@ public class Icons {
         TRANSPARENT_FONTS = loadImage(imgPath + "transparent-fonts.png");
 
         ABOUT = loadImage(imgPath + "about.png");
-
 
         IMAGE_NOT_FOUND = IMAGE_ERROR_32;
 
@@ -219,13 +209,11 @@ public class Icons {
 
         LOADING = new ImageIcon(Icons.class.getResource(imgPath + "loading.gif"));
 
-
         IMAGE_NOT_FOUND = IMAGE_ERROR_128;
         //@formatter:on
 
         Log.f2("Loading GUI icons - done.");
     }
-
 
     private static ImageIcon loadImage(String path) {
         BufferedImage bi = null;
@@ -236,27 +224,16 @@ public class Icons {
             bi = ImageIO.read(in);
             return new ImageIcon(bi);
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e("Failed loading image " + path, e);
             return IMAGE_NOT_FOUND;
-        } finally {
+        }
+        finally {
             Utils.close(in);
         }
 
     }
-
-    private static class MyResizer extends AbstractResizer {
-
-        public MyResizer() {
-            this(Collections.<RenderingHints.Key, Object>emptyMap());
-        }
-
-
-        public MyResizer(Map<RenderingHints.Key, Object> hints) {
-            super(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, hints);
-        }
-    }
-
 
     public static ImageIcon getIconFromStream(InputStream in, Dimension size) {
         Image i = null;
@@ -294,7 +271,8 @@ public class Icons {
                 Thumbnailator.createThumbnail(task);
 
                 i = out.getSink();
-            } else {
+            }
+            else {
                 i = orig;
             }
 
@@ -304,21 +282,34 @@ public class Icons {
 
             return ic;
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e("Failed loading icon.", e);
             return IMAGE_NOT_FOUND;
-        } finally {
+        }
+        finally {
             Utils.close(in);
         }
     }
 
-
     public static ImageIcon getIconFromFile(File file, Dimension size) {
         try {
             return getIconFromStream(new FileInputStream(file), size);
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e("Failed loading icon " + file, e);
             return IMAGE_NOT_FOUND;
+        }
+    }
+
+    private static class MyResizer extends AbstractResizer {
+
+        public MyResizer() {
+            this(Collections.<RenderingHints.Key, Object>emptyMap());
+        }
+
+        public MyResizer(Map<RenderingHints.Key, Object> hints) {
+            super(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, hints);
         }
     }
 }

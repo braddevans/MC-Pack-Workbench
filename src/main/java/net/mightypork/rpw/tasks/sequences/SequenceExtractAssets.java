@@ -1,27 +1,5 @@
 package net.mightypork.rpw.tasks.sequences;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-
-import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Flags;
 import net.mightypork.rpw.Paths;
@@ -36,15 +14,21 @@ import net.mightypork.rpw.tasks.Tasks;
 import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.tree.assets.EAsset;
 import net.mightypork.rpw.utils.Utils;
-import net.mightypork.rpw.utils.files.FileDirFilter;
-import net.mightypork.rpw.utils.files.FileUtils;
-import net.mightypork.rpw.utils.files.OsUtils;
-import net.mightypork.rpw.utils.files.SimpleConfig;
-import net.mightypork.rpw.utils.files.ZipUtils;
+import net.mightypork.rpw.utils.files.*;
 import net.mightypork.rpw.utils.logging.Log;
 import net.mightypork.rpw.utils.validation.FileSuffixFilter;
 import net.mightypork.rpw.utils.validation.StringFilter;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Sequence of "re-extract minecraft assets".
@@ -52,22 +36,6 @@ import net.mightypork.rpw.utils.validation.StringFilter;
  * @author MightyPork
  */
 public class SequenceExtractAssets extends AbstractMonitoredSequence {
-    private final String version;
-    private boolean modsLoaded = false;
-    private String assetsVersion;
-
-    /**
-     * Directory for saving loaded assets
-     */
-    private File outDir;
-
-    /**
-     * Map of all the loaded stuff
-     */
-    private Map<String, AssetEntry> assets;
-    protected ArrayList<JCheckBox> modCkboxes;
-    private File modsDir;
-
     private static final StringFilter ASSETS_DIR_FILTER = new StringFilter() {
 
         @Override
@@ -78,32 +46,41 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
             final String ext = split[1];
 
             // discard crap we don't want
-            if (fname.equals("READ_ME_I_AM_VERY_IMPORTANT.txt")) return false;
-            if (fname.equals("icon_16x16.png")) return false;
-            if (fname.equals("icon_32x32.png")) return false;
-            if (fname.equals("sounds.json")) return false;
+            if (fname.equals("READ_ME_I_AM_VERY_IMPORTANT.txt")) { return false; }
+            if (fname.equals("icon_16x16.png")) { return false; }
+            if (fname.equals("icon_32x32.png")) { return false; }
+            if (fname.equals("sounds.json")) { return false; }
 
             return EAsset.forExtension(ext).isAssetOrMeta();
         }
     };
-
+    private final String version;
+    protected ArrayList<JCheckBox> modCkboxes;
+    private boolean modsLoaded = false;
+    private String assetsVersion;
+    /**
+     * Directory for saving loaded assets
+     */
+    private File outDir;
+    /**
+     * Map of all the loaded stuff
+     */
+    private Map<String, AssetEntry> assets;
+    private File modsDir;
 
     public SequenceExtractAssets(String version) {
         this.version = version;
     }
-
 
     @Override
     protected String getMonitorHeading() {
         return "Importing Minecraft assets (" + version + ")";
     }
 
-
     @Override
     public int getStepCount() {
         return 6; // Must match the actual number!
     }
-
 
     @Override
     protected boolean step(int step) {
@@ -128,7 +105,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
     }
 
-
     @Override
     public String getStepName(int step) {
         //@formatter:off
@@ -151,7 +127,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
         //@formatter:on
     }
 
-
     /**
      * Prepare output directory
      *
@@ -160,7 +135,7 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
     private boolean stepCheckVersionCompatibility() {
         final File jsonFile = new File(OsUtils.getMcDir("versions/" + version), version + ".json");
 
-        if (!jsonFile.exists()) {
+        if (! jsonFile.exists()) {
             Log.e("Version JSON file not found, aborting!");
             return false;
         }
@@ -175,15 +150,17 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
             if (vi.assets == null) {
                 assetsVersion = "legacy"; // legacy assets index (1.7.2 and
                 // below)
-            } else {
+            }
+            else {
                 assetsVersion = vi.assets;
             }
 
             if (vi.type == null) {
                 Log.e("Version type not defined, aborting.\nIf you report this, ATTACH THE VERSION JSON FILE!");
                 return false;
-            } else {
-                if (!vi.isReleaseOrSnapshot()) {
+            }
+            else {
+                if (! vi.isReleaseOrSnapshot()) {
                     Log.e("Unsupported version type: " + vi.type);
                     Log.i("RPW supports only types 'release' and 'snapshot'.");
                     return false;
@@ -192,14 +169,14 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
             Log.f3("Assets version to be used: " + assetsVersion);
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e("Error while parsing JSON file, aborting.", e);
             return false;
         }
 
         return true;
     }
-
 
     /**
      * Prepare output directory
@@ -211,7 +188,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
         outDir.mkdirs();
         return true;
     }
-
 
     /**
      * Load asset files from Minecraft jar
@@ -234,7 +210,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
         return true;
     }
 
-
     /**
      * Load files from .minecraft/assets
      *
@@ -252,7 +227,8 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
             Log.f3("Detected legacy folder structure.");
             Log.w("YOU SHOULD UPDATE YOUR MINECRAFT LAUNCHER!");
 
-        } else {
+        }
+        else {
             // objects
             useObjectRegistry = true;
             source = OsUtils.getMcDir("assets/indexes/" + assetsVersion + ".json"); // try  per-version file
@@ -260,7 +236,7 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
             Log.f3("Detected object registry.");
             Log.f3("Checking index file: " + source);
 
-            if (!source.exists()) {
+            if (! source.exists()) {
                 Log.e("Index file not found, aborting.");
                 Log.i("TO FIX THIS, run Minecraft (v. " + version + "),\nclose it and try this again.");
                 return false;
@@ -281,7 +257,8 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                 Log.f2("Using index file: " + source);
                 FileUtils.extractObjectFiles(source, target, ASSETS_DIR_FILTER, list);
 
-            } else {
+            }
+            else {
                 // legacy structure
 
                 targetDirName = "assets/minecraft";
@@ -295,7 +272,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                     public boolean acceptFile(File f) {
                         return ASSETS_DIR_FILTER.accept(f.getName());
                     }
-
 
                     @Override
                     public boolean acceptDirectory(File f) {
@@ -322,8 +298,8 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
                 final EAsset type = EAsset.forExtension(ext);
 
-                if (!type.isAsset()) {
-                    if (Config.LOG_EXTRACTED_ASSETS) Log.f3("SKIPPED " + p);
+                if (! type.isAsset()) {
+                    if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("SKIPPED " + p); }
                     continue;
                 }
 
@@ -331,17 +307,17 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
                 assets.put(key, ae);
 
-                if (Config.LOG_EXTRACTED_ASSETS) Log.f3("+ " + ae.toString());
+                if (Config.LOG_EXTRACTED_ASSETS) { Log.f3("+ " + ae.toString()); }
             }
 
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             Log.e(e);
             return false;
         }
 
         return true;
     }
-
 
     /**
      * Load files from mods (if any)
@@ -387,13 +363,16 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                             final ModEntryList mel = ModEntryList.fromJson(json_modinfo);
                             name = mel.getModListName();
                         }
-                    } catch (final Exception e) {
+                    }
+                    catch (final Exception e) {
                         Log.e("Broken mcmod.info file in " + f.getName(), e);
                     }
-                } catch (final Exception e) {
+                }
+                catch (final Exception e) {
                     Log.e("Error reading mod file, skipping: " + f.getName(), e);
                     continue;
-                } finally {
+                }
+                finally {
                     Utils.close(modzf);
                 }
 
@@ -461,7 +440,7 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
             //@formatter:off
             final Object[] params = {
                     "Some mods have been found.\n" +
-                            "RPW will include the selected mods.",
+                    "RPW will include the selected mods.",
                     vb2
             };
             //@formatter:on
@@ -488,7 +467,7 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                 // do the work
                 int added = 0;
                 for (final JCheckBox c : modCkboxes) {
-                    if (!c.isSelected()) continue;
+                    if (! c.isSelected()) { continue; }
 
                     final int oldLen = assets.size();
 
@@ -505,7 +484,6 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
         return true;
     }
-
 
     /**
      * Save structure to file
@@ -528,7 +506,8 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
         final File datafile = OsUtils.getAppDir(Paths.DIR_VANILLA + "/" + version + "/structure.dat");
         try {
             SimpleConfig.mapToFile(datafile, saveMap, false);
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.e(e);
 
             Alerts.loading(false);
@@ -539,17 +518,15 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
 
     }
 
-
     @Override
     protected void doBefore() {
         Log.f1("Extracting Minecraft assets (" + version + ")");
 
     }
 
-
     @Override
     protected void doAfter(boolean success) {
-        if (!success) {
+        if (! success) {
             Log.e("Extracting Minecraft assets - FAILED.");
 
             //@formatter:off
@@ -557,8 +534,8 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                     monitorDialog,
                     "Extraction failed",
                     "Something went wrong: LOOK IN THE LOG for details.\n" +
-                            "\n" +
-                            "If you think this is a bug, please report it to MightyPork."
+                    "\n" +
+                    "If you think this is a bug, please report it to MightyPork."
             );
             //@formatter:on
 
@@ -579,10 +556,10 @@ public class SequenceExtractAssets extends AbstractMonitoredSequence {
                     monitorDialog,
                     "Mods installed",
                     "It is recommended to disable Fancy Tree display\n" +
-                            "when mods are installed. You can toggle it in\n" +
-                            "the Options menu.\n" +
-                            "\n" +
-                            "Disable Fancy Tree now?"
+                    "when mods are installed. You can toggle it in\n" +
+                    "the Options menu.\n" +
+                    "\n" +
+                    "Disable Fancy Tree now?"
             );
             //@formatter:on
 

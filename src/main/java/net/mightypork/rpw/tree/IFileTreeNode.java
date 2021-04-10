@@ -9,7 +9,6 @@ public interface IFileTreeNode {
      */
     public boolean isDirectory();
 
-
     /**
      * Get if this node is a file node.
      *
@@ -17,15 +16,11 @@ public interface IFileTreeNode {
      */
     public boolean isFile();
 
-
     public boolean isSound();
-
 
     public boolean isImage();
 
-
     public boolean isText();
-
 
     public boolean isJson();
 }

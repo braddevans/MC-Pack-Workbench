@@ -1,9 +1,5 @@
 package net.mightypork.rpw.tasks.sequences;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.library.MagicSources;
@@ -15,29 +11,28 @@ import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.utils.files.DirectoryTreeDifferenceFinder;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 public class SequenceDeleteIdenticalToVanilla extends AbstractMonitoredSequence {
     private final Project project;
 
     private int count = 0;
 
-
     public SequenceDeleteIdenticalToVanilla() {
         this.project = Projects.getActive();
     }
-
 
     @Override
     protected String getMonitorHeading() {
         return "Deleting unchanged copies of vanilla assets";
     }
 
-
     @Override
     public int getStepCount() {
         return 2;
     }
-
 
     @Override
     public String getStepName(int step) {
@@ -53,7 +48,6 @@ public class SequenceDeleteIdenticalToVanilla extends AbstractMonitoredSequence 
         return null;
     }
 
-
     @Override
     protected boolean step(int step) {
         //@formatter:off
@@ -67,7 +61,6 @@ public class SequenceDeleteIdenticalToVanilla extends AbstractMonitoredSequence 
 
         return false;
     }
-
 
     private boolean stepDeleteCrap() {
         Collection<AssetEntry> entries = Sources.vanilla.getAssetEntries();
@@ -85,7 +78,8 @@ public class SequenceDeleteIdenticalToVanilla extends AbstractMonitoredSequence 
                     project.setSourceForFile(key, MagicSources.INHERIT);
                     count++;
                 }
-            } catch (IOException e1) {
+            }
+            catch (IOException e1) {
                 Log.e(e1);
             }
         }
@@ -96,14 +90,12 @@ public class SequenceDeleteIdenticalToVanilla extends AbstractMonitoredSequence 
         return true;
     }
 
-
     @Override
     protected void doBefore() {
     }
 
-
     @Override
     protected void doAfter(boolean success) {
-        if (success) Alerts.info(App.getFrame(), "Successfully removed " + count + " Vanilla duplicates from project.");
+        if (success) { Alerts.info(App.getFrame(), "Successfully removed " + count + " Vanilla duplicates from project."); }
     }
 }

@@ -1,24 +1,20 @@
 package net.mightypork.rpw.tasks.sequences;
 
-import java.awt.Dialog.ModalityType;
-
 import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.gui.windows.messages.DialogProgressTerminal;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.awt.Dialog.ModalityType;
 
 public abstract class AbstractMonitoredSequence extends AbstractSequence {
 
     protected DialogProgressTerminal monitorDialog = null;
 
-
     @Override
     protected abstract boolean step(int step);
 
-
     @Override
     public abstract int getStepCount();
-
 
     @Override
     protected final void before() {
@@ -30,14 +26,11 @@ public abstract class AbstractMonitoredSequence extends AbstractSequence {
         doBefore();
     }
 
-
     protected abstract String getMonitorHeading();
-
 
     protected String getMonitorTitle() {
         return getMonitorHeading();
     }
-
 
     @Override
     protected void beforeStep(int index) {
@@ -47,9 +40,7 @@ public abstract class AbstractMonitoredSequence extends AbstractSequence {
         }
     }
 
-
     protected abstract void doBefore();
-
 
     @Override
     protected final void after(boolean success) {
@@ -67,14 +58,11 @@ public abstract class AbstractMonitoredSequence extends AbstractSequence {
         monitorDialog.forceGetFocus();
     }
 
-
     protected void closeMonitor() {
-        if (monitorDialog != null) monitorDialog.closeDialog();
+        if (monitorDialog != null) { monitorDialog.closeDialog(); }
     }
 
-
     protected abstract void doAfter(boolean success);
-
 
     @Override
     public abstract String getStepName(int step);

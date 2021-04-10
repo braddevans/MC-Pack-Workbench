@@ -2,7 +2,6 @@ package net.mightypork.rpw.tree.assets.groups;
 
 import java.util.Comparator;
 
-
 public class DotComparator<T extends Comparable<T>> implements Comparator<T> {
 
     @Override
@@ -14,7 +13,7 @@ public class DotComparator<T extends Comparable<T>> implements Comparator<T> {
             return dotsA.compareTo(dotsB);
         }
 
-        return -a.compareTo(b); // backwards
+        return - a.compareTo(b); // backwards
     }
 
 }

@@ -1,14 +1,11 @@
 package net.mightypork.rpw.gui.windows;
 
 import net.mightypork.rpw.App;
-import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Const;
-import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.WindowCloseListener;
-import net.mightypork.rpw.gui.widgets.*;
+import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.tasks.Tasks;
-import net.mightypork.rpw.utils.logging.Log;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXLabel;
 

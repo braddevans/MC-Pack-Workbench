@@ -1,15 +1,13 @@
 package net.mightypork.rpw.gui.helpers;
 
-import java.awt.Component;
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.utils.validation.FileSuffixFilter;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.File;
 
 /**
  * RPW wrapper for JFileChooser
@@ -17,15 +15,6 @@ import net.mightypork.rpw.utils.validation.FileSuffixFilter;
  * @author Ondřej Hruška (MightyPork)
  */
 public class FileChooser {
-
-    private final JFileChooser fc;
-    private final Component parent;
-    private int state;
-    private final FilePath pathEnum;
-
-    private static final int CANCEL = JFileChooser.CANCEL_OPTION;
-    private static final int APPROVE = JFileChooser.APPROVE_OPTION;
-    private static final int ERROR = JFileChooser.ERROR_OPTION;
 
     public static final FileChooserFilter ZIP = new FileChooserFilter("ZIP archives", "zip");
     public static final FileChooserFilter ZIP_JAR = new FileChooserFilter("ZIP, JAR archives", "zip,jar");
@@ -37,19 +26,32 @@ public class FileChooser {
     public static final FileChooserFilter FSH = new FileChooserFilter("Fragment shaders", "fsh");
     public static final FileChooserFilter FOLDERS = new FolderChooserFilter();
     public static final FileChooserFilter FOLDERS_ZIP = new FolderZipChooserFilter();
-
+    private static final int CANCEL = JFileChooser.CANCEL_OPTION;
+    private static final int APPROVE = JFileChooser.APPROVE_OPTION;
+    private static final int ERROR = JFileChooser.ERROR_OPTION;
+    private final JFileChooser fc;
+    private final Component parent;
+    private final FilePath pathEnum;
+    private int state;
 
     /**
      * A filechooser
      *
-     * @param parent   parent component (frame, dialog...)
-     * @param pathEnum file path (used for remembering last path. Use DEFAULT for
-     *                 User's home)
-     * @param title    dialog window title
-     * @param filter   file filter
-     * @param files    allow choosing files
-     * @param dirs     allow choosing directories
-     * @param multi    allow multiple selection
+     * @param parent
+     *         parent component (frame, dialog...)
+     * @param pathEnum
+     *         file path (used for remembering last path. Use DEFAULT for
+     *         User's home)
+     * @param title
+     *         dialog window title
+     * @param filter
+     *         file filter
+     * @param files
+     *         allow choosing files
+     * @param dirs
+     *         allow choosing directories
+     * @param multi
+     *         allow multiple selection
      */
     public FileChooser(Component parent, FilePath pathEnum, String title, FileChooserFilter filter, boolean files, boolean dirs, boolean multi) {
         this.parent = parent;
@@ -66,19 +68,18 @@ public class FileChooser {
 
         fc.setFileSelectionMode((files && dirs) ? JFileChooser.FILES_AND_DIRECTORIES : (files ? JFileChooser.FILES_ONLY : JFileChooser.DIRECTORIES_ONLY));
         fc.setMultiSelectionEnabled(multi);
-        fc.setFileHidingEnabled(!Config.SHOW_HIDDEN_FILES);
+        fc.setFileHidingEnabled(! Config.SHOW_HIDDEN_FILES);
     }
-
 
     /**
      * Change dialog title
      *
-     * @param title new title
+     * @param title
+     *         new title
      */
     public void setTitle(String title) {
         fc.setDialogTitle(title);
     }
-
 
     /**
      * Show dialog with "Open" button
@@ -88,7 +89,6 @@ public class FileChooser {
         rememberPath();
     }
 
-
     /**
      * Show dialog woth "Save" button
      */
@@ -97,17 +97,16 @@ public class FileChooser {
         rememberPath();
     }
 
-
     /**
      * Show dialog with custom OK button text
      *
-     * @param approveButtonText OK button text
+     * @param approveButtonText
+     *         OK button text
      */
     public void showDialog(String approveButtonText) {
         this.state = fc.showDialog(getParent(), approveButtonText);
         rememberPath();
     }
-
 
     /**
      * Store path to the config file
@@ -116,7 +115,6 @@ public class FileChooser {
         this.pathEnum.savePath(fc.getCurrentDirectory().getPath());
     }
 
-
     /**
      * @return file selected in filechooser
      */
@@ -124,6 +122,15 @@ public class FileChooser {
         return fc.getSelectedFile();
     }
 
+    /**
+     * Select file
+     *
+     * @param file
+     *         file to set
+     */
+    public void setSelectedFile(File file) {
+        fc.setSelectedFile(file);
+    }
 
     /**
      * @return files selected in filechooser (may be null or empty)
@@ -132,17 +139,6 @@ public class FileChooser {
         return fc.getSelectedFiles();
     }
 
-
-    /**
-     * Select file
-     *
-     * @param file file to set
-     */
-    public void setSelectedFile(File file) {
-        fc.setSelectedFile(file);
-    }
-
-
     /**
      * @return true if the dialog was closed with "OK"
      */
@@ -150,15 +146,13 @@ public class FileChooser {
         return state == APPROVE;
     }
 
-
     /**
      * @return true if the dialog window was closed or "Cancel" was pressed, or
-     * an error occurred.
+     *         an error occurred.
      */
     public boolean canceled() {
         return state == CANCEL || state == ERROR;
     }
-
 
     /**
      * @return filechooser current directory
@@ -166,7 +160,6 @@ public class FileChooser {
     public File getCurrentDirectory() {
         return fc.getCurrentDirectory();
     }
-
 
     protected Component getParent() {
         return parent;
@@ -176,7 +169,6 @@ public class FileChooser {
         public FolderChooserFilter() {
             super("Folders", "");
         }
-
 
         @Override
         public String getDescription() {
@@ -188,7 +180,6 @@ public class FileChooser {
         public FolderZipChooserFilter() {
             super("Folders & Zip files", "");
         }
-
 
         @Override
         public String getDescription() {
@@ -206,13 +197,11 @@ public class FileChooser {
             this.fsf = new FileSuffixFilter(suffixes.split(","));
         }
 
-
         @Override
         public boolean accept(File f) {
-            if (f.isDirectory()) return true;
+            if (f.isDirectory()) { return true; }
             return fsf.accept(f);
         }
-
 
         @Override
         public String getDescription() {

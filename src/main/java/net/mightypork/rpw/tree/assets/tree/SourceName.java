@@ -4,11 +4,9 @@ public class SourceName {
 
     private final String s;
 
-
     public SourceName(String s) {
         this.s = s;
     }
-
 
     @Override
     public String toString() {

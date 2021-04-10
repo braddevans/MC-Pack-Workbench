@@ -7,7 +7,6 @@ public class LangEntry {
     public String code;
     public boolean bidirectional;
 
-
     public LangEntry() {
     }
 
@@ -17,7 +16,6 @@ public class LangEntry {
         this.code = code;
         this.bidirectional = bidirectional;
     }
-
 
     @Override
     public String toString() {

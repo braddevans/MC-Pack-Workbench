@@ -1,12 +1,5 @@
 package net.mightypork.rpw.gui.windows.messages;
 
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -14,18 +7,18 @@ import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.help.VersionUtils;
 
+import javax.swing.*;
+import java.awt.*;
 
 public class DialogChangelog extends RpwDialog {
 
     private JButton buttonOK;
-
 
     public DialogChangelog() {
         super(App.getFrame(), "What's new");
 
         createDialog();
     }
-
 
     @Override
     protected JComponent buildGui() {
@@ -50,7 +43,6 @@ public class DialogChangelog extends RpwDialog {
 
         return vbox;
     }
-
 
     @Override
     protected void addActions() {

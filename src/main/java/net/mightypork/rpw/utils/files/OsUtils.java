@@ -1,57 +1,30 @@
 package net.mightypork.rpw.utils.files;
 
-import java.io.File;
-import java.util.List;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Flags;
 import net.mightypork.rpw.Paths;
-import net.mightypork.rpw.project.Project;
-import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.io.File;
+import java.util.List;
 
 public class OsUtils {
-    public enum EnumOS {
-        linux, macos, solaris, unknown, windows;
-
-        public boolean isLinux() {
-            return this == linux || this == solaris;
-        }
-
-
-        public boolean isMac() {
-            return this == macos;
-        }
-
-
-        public boolean isWindows() {
-            return this == windows;
-        }
-    }
-
     private static EnumOS _os;
-
     private static File appDir;
-
     private static File mcDir;
-
 
     public static boolean isLinux() {
         return getOs().isLinux();
     }
 
-
     public static boolean isMac() {
         return getOs().isMac();
     }
 
-
     public static boolean isWindows() {
         return getOs().isWindows();
     }
-
 
     /**
      * Get App dir, ensure it exists
@@ -59,39 +32,40 @@ public class OsUtils {
      * @return app dir
      */
     public static File getAppDir() {
-        if (OsUtils.appDir == null) OsUtils.appDir = OsUtils.getWorkDir(Paths.APP_DIR, true);
+        if (OsUtils.appDir == null) { OsUtils.appDir = OsUtils.getWorkDir(Paths.APP_DIR, true); }
         return OsUtils.appDir;
     }
-
 
     /**
      * Get App sub-folder, don't try to create
      *
      * @param subfolderName
+     *
      * @return the folder
      */
     public static File getAppDir(String subfolderName) {
         return new File(OsUtils.getAppDir(), subfolderName);
     }
 
-
     /**
      * Get App sub-folder
      *
      * @param subfolderName
-     * @param create        whether create it if not exists
+     * @param create
+     *         whether create it if not exists
+     *
      * @return the folder
      */
     public static File getAppDir(String subfolderName, boolean create) {
         final File f = new File(OsUtils.getAppDir(), subfolderName);
 
-        if (!f.exists() && create) {
-            if (!f.mkdirs()) {
+        if (! f.exists() && create) {
+            if (! f.mkdirs()) {
                 //@formatter:off
                 App.die(
                         "Could not create directory:\n\n" +
-                                f + "\n\n" +
-                                "Please, check the filesystem."
+                        f + "\n\n" +
+                        "Please, check the filesystem."
                 );
                 //@formatter:on
             }
@@ -100,46 +74,46 @@ public class OsUtils {
         return f;
     }
 
-
     /**
      * Get MC dir
      *
      * @return mc dir
      */
     public static File getMcDir() {
-        if (OsUtils.mcDir == null) OsUtils.mcDir = OsUtils.getWorkDir(Paths.MC_DIR, false);
+        if (OsUtils.mcDir == null) { OsUtils.mcDir = OsUtils.getWorkDir(Paths.MC_DIR, false); }
         return OsUtils.mcDir;
     }
-
 
     /**
      * Get MC sub-folder, don't try to create
      *
      * @param subfolderName
+     *
      * @return the folder
      */
     public static File getMcDir(String subfolderName) {
         return new File(OsUtils.getMcDir(), subfolderName);
     }
 
-
     /**
      * Get MC sub-folder
      *
      * @param subfolderName
-     * @param create        whether create it if not exists
+     * @param create
+     *         whether create it if not exists
+     *
      * @return the folder
      */
     public static File getMcDir(String subfolderName, boolean create) {
         final File f = new File(OsUtils.getMcDir(), subfolderName);
 
-        if (!f.exists() && create) {
-            if (!f.mkdirs()) {
+        if (! f.exists() && create) {
+            if (! f.mkdirs()) {
                 //@formatter:off
                 App.die(
                         "Could not create directory:\n\n" +
-                                f + "\n\n" +
-                                "Please, check the filesystem."
+                        f + "\n\n" +
+                        "Please, check the filesystem."
                 );
                 //@formatter:on
             }
@@ -181,11 +155,11 @@ public class OsUtils {
 
         if (s.contains("unix")) {
             return EnumOS.linux;
-        } else {
+        }
+        else {
             return EnumOS.unknown;
         }
     }
-
 
     private static File getWorkDir(String dirname, boolean create) {
         final String userhome = System.getProperty("user.home", ".");
@@ -202,7 +176,8 @@ public class OsUtils {
 
                 if (appdata != null) {
                     file = new File(appdata, "." + dirname + '/');
-                } else {
+                }
+                else {
                     file = new File(userhome, "." + dirname + '/');
                 }
 
@@ -217,14 +192,14 @@ public class OsUtils {
                 break;
         }
 
-        if (!file.exists() || !file.isDirectory()) {
+        if (! file.exists() || ! file.isDirectory()) {
             if (create) {
-                if (!file.mkdirs()) {
+                if (! file.mkdirs()) {
                     //@formatter:off
                     App.die(
                             "Working directory could not be created:\n\n" +
-                                    file + "\n\n" +
-                                    "Check filesystem and try again."
+                            file + "\n\n" +
+                            "Check filesystem and try again."
                     );
                     //@formatter:on
                 }
@@ -234,27 +209,26 @@ public class OsUtils {
         return file;
     }
 
-
     private static void checkMinecraft() {
         final File mcdir = OsUtils.getMcDir();
-        if (!mcdir.exists() || !mcdir.isDirectory()) {
+        if (! mcdir.exists() || ! mcdir.isDirectory()) {
             //@formatter:off
             App.die(
                     "Minecraft installation not found,\n" +
-                            "game directory does not exist:\n\n" +
-                            mcdir + "\n\n" +
-                            "Install Minecraft and try again."
+                    "game directory does not exist:\n\n" +
+                    mcdir + "\n\n" +
+                    "Install Minecraft and try again."
             );
             //@formatter:on
         }
 
         final File mcversions = OsUtils.getMcDir("versions");
-        if (!mcversions.exists() || !mcversions.isDirectory()) {
+        if (! mcversions.exists() || ! mcversions.isDirectory()) {
             //@formatter:off
             App.die(
                     "Minecraft 'versions' folder is missing.\n\n" +
-                            mcversions + "\n\n" +
-                            "Your Minecraft is probably too old."
+                    mcversions + "\n\n" +
+                    "Your Minecraft is probably too old."
             );
             //@formatter:on
         }
@@ -266,7 +240,7 @@ public class OsUtils {
             if (f.exists() && f.isDirectory()) {
                 final File jar = new File(f, f.getName() + ".jar");
 
-                if (jar.exists() && jar.isFile()) valid++;
+                if (jar.exists() && jar.isFile()) { valid++; }
             }
         }
 
@@ -274,19 +248,17 @@ public class OsUtils {
             //@formatter:off
             App.die(
                     "Minecraft 'versions' folder contains no jar files.\n\n" +
-                            mcversions + "\n\n" +
-                            "Run Minecraft and try again."
+                    mcversions + "\n\n" +
+                    "Run Minecraft and try again."
             );
             //@formatter:on
         }
     }
 
-
     public static void initDirs() {
         Log.f2("Checking Minecraft installation.");
         OsUtils.checkMinecraft();
     }
-
 
     public static void initWorkdir() {
         Log.f2("Checking working directory.");
@@ -300,7 +272,7 @@ public class OsUtils {
         final File vanilla = OsUtils.getAppDir(Paths.DIR_VANILLA + "/" + Config.LIBRARY_VERSION, false);
         final File vanillaAssets = OsUtils.getAppDir(Paths.DIR_VANILLA + "/" + Config.LIBRARY_VERSION + "/assets", false);
 
-        if (!vanilla.exists() || vanilla.list().length == 0 || !vanillaAssets.exists()) {
+        if (! vanilla.exists() || vanilla.list().length == 0 || ! vanillaAssets.exists()) {
             Flags.MUST_EXTRACT = true;
         }
 
@@ -310,5 +282,21 @@ public class OsUtils {
         FileUtils.delete(OsUtils.getAppDir(Paths.DIR_TMP, true), true);
 
         OsUtils.getAppDir(Paths.DIR_TMP, true); // create TMP
+    }
+
+    public enum EnumOS {
+        linux, macos, solaris, unknown, windows;
+
+        public boolean isLinux() {
+            return this == linux || this == solaris;
+        }
+
+        public boolean isMac() {
+            return this == macos;
+        }
+
+        public boolean isWindows() {
+            return this == windows;
+        }
     }
 }

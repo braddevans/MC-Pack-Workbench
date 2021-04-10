@@ -1,9 +1,5 @@
 package net.mightypork.rpw.tasks;
 
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.gui.helpers.FileChooser;
@@ -13,6 +9,9 @@ import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class TaskImportReplacement {
 
@@ -26,13 +25,13 @@ public class TaskImportReplacement {
                 final FileChooser fc = new FileChooser(App.getFrame(), FilePath.IMPORT_FILE, title, entry.getType().getFilter(), true, false, false);
 
                 fc.showDialog("Import");
-                if (!fc.approved()) {
+                if (! fc.approved()) {
                     return;
                 }
 
                 final File f = fc.getSelectedFile();
 
-                if (f == null || !f.exists()) {
+                if (f == null || ! f.exists()) {
                     Log.w("Problem accessing file:\n" + f);
                     Alerts.error(App.getFrame(), "That's not a valid file.");
                     return;
@@ -47,7 +46,8 @@ public class TaskImportReplacement {
 
                     afterImport.run();
 
-                } catch (final IOException e) {
+                }
+                catch (final IOException e) {
                     Log.e(e);
                     Alerts.error(App.getFrame(), "Something went wrong during import.");
                 }

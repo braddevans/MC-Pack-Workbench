@@ -10,10 +10,8 @@ public class FileObject {
     public String hash;
     public int size;
 
-
     public FileObject() {
     }
-
 
     @Override
     public String toString() {

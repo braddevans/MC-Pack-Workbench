@@ -1,26 +1,22 @@
 package net.mightypork.rpw.gui.widgets;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.tree.TreeSelectionModel;
-
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.trees.SoundFileTreeClickListener;
 import net.mightypork.rpw.gui.windows.dialogs.DialogSoundWizard;
 import net.mightypork.rpw.tree.TreeIconProvider;
 import net.mightypork.rpw.tree.filesystem.DirectoryFsTreeNode;
 import net.mightypork.rpw.tree.filesystem.FsTreeModel;
-
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
 
 public class SoundFileTreeDisplay {
 
     public JScrollPane scrollPane;
     public JXTree tree;
     public FsTreeModel model;
-
 
     public SoundFileTreeDisplay(DirectoryFsTreeNode root, DialogSoundWizard wizard) {
         model = new FsTreeModel(root);
@@ -42,11 +38,9 @@ public class SoundFileTreeDisplay {
         scrollPane = new JScrollPane(tree);
     }
 
-
     public JComponent getComponent() {
         return scrollPane;
     }
-
 
     public void setRoot(DirectoryFsTreeNode root) {
         model.setRoot(root);

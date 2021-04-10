@@ -1,16 +1,12 @@
 package net.mightypork.rpw.gui.widgets;
 
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.table.TableCellRenderer;
-
 import net.mightypork.rpw.Const;
 import net.mightypork.rpw.gui.Icons;
-
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
 public class HackedJXTreeTable extends JXTreeTable {
 
@@ -18,15 +14,10 @@ public class HackedJXTreeTable extends JXTreeTable {
         super(treeModel);
     }
 
-
     @Override
     protected TreeTableHacker getTreeTableHacker() {
         return new TreeTableHackerExt999();
     }
-
-    public class TreeTableHackerExt999 extends TreeTableHackerExt2 {
-    }
-
 
     @Override
     public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
@@ -42,7 +33,6 @@ public class HackedJXTreeTable extends JXTreeTable {
         return returnComp;
     }
 
-
     @Override
     public void updateUI() {
         super.updateUI();
@@ -51,8 +41,12 @@ public class HackedJXTreeTable extends JXTreeTable {
         try {
             setCollapsedIcon(Icons.TREE_OPEN);
             setExpandedIcon(Icons.TREE_CLOSE);
-        } catch (final NullPointerException e) {
+        }
+        catch (final NullPointerException e) {
         }
 
+    }
+
+    public class TreeTableHackerExt999 extends TreeTableHackerExt2 {
     }
 }

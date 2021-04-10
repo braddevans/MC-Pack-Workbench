@@ -1,13 +1,12 @@
 package net.mightypork.rpw.tree.assets.groups;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.utils.logging.Log;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GroupFilter {
 
@@ -20,18 +19,19 @@ public class GroupFilter {
     public String filterSyntax = null;
     public String groupKey = null;
 
-
     /**
      * Construct a group filter
      *
-     * @param groupKey     target group key
-     * @param filterSyntax matching patterns (* = wild card, | = divider)
+     * @param groupKey
+     *         target group key
+     * @param filterSyntax
+     *         matching patterns (* = wild card, | = divider)
      */
     public GroupFilter(String groupKey, String filterSyntax) {
         this.filterSyntax = filterSyntax;
         this.groupKey = groupKey;
 
-        if (filterSyntax == null) return;
+        if (filterSyntax == null) { return; }
 
         final String[] patterns = filterSyntax.split("[|]");
         for (int i = 0; i < patterns.length; i++) {
@@ -59,24 +59,20 @@ public class GroupFilter {
         }
     }
 
-
     public boolean matches(AssetEntry entry) {
         for (final Matcher m : matchers) {
-            if (m.reset(entry.getKey()).matches()) return true;
+            if (m.reset(entry.getKey()).matches()) { return true; }
         }
         return false;
     }
-
 
     public String getGroupKey() {
         return this.groupKey;
     }
 
-
     public void setGroupKey(String key) {
         this.groupKey = key;
     }
-
 
     @Override
     public String toString() {

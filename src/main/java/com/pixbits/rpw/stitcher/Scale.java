@@ -6,16 +6,13 @@ public enum Scale {
     public final float scale;
     public final String name;
 
-
     Scale(String name, float scale) {
         this.scale = scale;
         this.name = name;
     }
 
-
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }

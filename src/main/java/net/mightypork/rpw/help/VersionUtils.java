@@ -9,26 +9,23 @@ import net.mightypork.rpw.utils.logging.Log;
 
 import java.util.ArrayList;
 
-
 public class VersionUtils {
 
     public static boolean shouldShowChangelog() {
         // Do not show changelog on first run
-        if (Config.LAST_RUN_VERSION == Config.def_LAST_RUN_VERSION) return false;
+        if (Config.LAST_RUN_VERSION == Config.def_LAST_RUN_VERSION) { return false; }
 
         // Same version as last time - no show
-        if (Config.LAST_RUN_VERSION >= Const.VERSION_SERIAL) return false;
+        if (Config.LAST_RUN_VERSION >= Const.VERSION_SERIAL) { return false; }
 
         // verify that there's anything to show
         final String chlg = getChangelogForVersion(Const.VERSION_SERIAL);
-        return !chlg.isEmpty();
+        return ! chlg.isEmpty();
     }
-
 
     public static String buildChangelogMd() {
         // markdown document
         String md = "";
-
 
         Log.f3("Building changelog...");
 
@@ -37,7 +34,7 @@ public class VersionUtils {
         int startVersion = Config.LAST_RUN_VERSION;
         for (int i = startVersion; i <= Const.VERSION_SERIAL; i++) {
             final String chl = getChangelogForVersion(i);
-            if (chl.isEmpty()) continue;
+            if (chl.isEmpty()) { continue; }
 
             String frag = "\n\n<p class=\"littleHeading\">" + getVersionString(i) + "</p>\n\n";
             frag += chl.trim() + "\n";
@@ -58,7 +55,6 @@ public class VersionUtils {
         return md;
     }
 
-
     private static String getChangelogForVersion(int version) {
         final String fname = Paths.DATA_DIR_CHANGELOGS + version + ".md";
 
@@ -67,12 +63,10 @@ public class VersionUtils {
         return FileUtils.getResourceAsString(fname);
     }
 
-
     public static String buildChangelogHtml() {
         final String md = buildChangelogMd();
         return HtmlBuilder.markdownToHtmlChangelog(md);
     }
-
 
     public static String getVersionString(int version) {
         //@formatter:off
@@ -83,7 +77,6 @@ public class VersionUtils {
                 (version % 10));
         //@formatter:on
     }
-
 
     public static int getVersionMajor(int version) {
         return (int) (Math.floor(version / 10) * 10);

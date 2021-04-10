@@ -1,21 +1,6 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 import net.mightypork.rpw.App;
-import net.mightypork.rpw.Config;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.ClickListener;
 import net.mightypork.rpw.gui.helpers.TextEditListener;
@@ -28,24 +13,44 @@ import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.SimpleConfig;
 import net.mightypork.rpw.utils.logging.Log;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class DialogEditText extends DialogEditorBase {
 
+    private final ActionListener insertFormattingCodeListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String code = e.getActionCommand();
+
+            final RSyntaxTextArea ta = getTextArea();
+
+            ta.insert(code, ta.getCaretPosition());
+
+            ta.requestFocusInWindow();
+        }
+    };
     private JButton btnCancel;
     private JButton btnSave;
     private JButton btnFormatCodes;
     private JPopupMenu formatCodesPopup;
-
     private EAsset type;
     private TextEditListener listener;
     private String dlgTitle;
     private String dlgText;
     private boolean dlgFormattingCodes;
     private String dlgHeading;
-
 
     public DialogEditText(final AssetTreeLeaf node) throws IOException {
         this();
@@ -63,7 +68,8 @@ public class DialogEditText extends DialogEditorBase {
 
                 try {
                     FileUtils.stringToFile(file, text);
-                } catch (final IOException e1) {
+                }
+                catch (final IOException e1) {
                     Log.e(e1);
 
                     Alerts.error(App.getFrame(), "Could not save file.");
@@ -72,7 +78,6 @@ public class DialogEditText extends DialogEditorBase {
             }
         });
     }
-
 
     public DialogEditText(final File file) throws IOException {
         this();
@@ -87,7 +92,8 @@ public class DialogEditText extends DialogEditorBase {
             public void onDialogClosed(String text) {
                 try {
                     FileUtils.stringToFile(file, text);
-                } catch (final IOException e1) {
+                }
+                catch (final IOException e1) {
                     Log.e(e1);
 
                     Alerts.error(App.getFrame(), "Could not save file.");
@@ -96,11 +102,9 @@ public class DialogEditText extends DialogEditorBase {
         });
     }
 
-
     public DialogEditText() {
         super();
     }
-
 
     private void create(String title, String text, EAsset type, boolean showFormatingCodes, TextEditListener listener) {
         this.dlgTitle = title + " - RPW Text editor";
@@ -113,7 +117,6 @@ public class DialogEditText extends DialogEditorBase {
 
         createDialog();
     }
-
 
     private JPopupMenu buildCodesPopup() {
         final JPopupMenu popup = new JPopupMenu();
@@ -149,7 +152,6 @@ public class DialogEditText extends DialogEditorBase {
         return popup;
     }
 
-
     @Override
     protected void addActions() {
         btnCancel.addActionListener(closeListener);
@@ -170,7 +172,6 @@ public class DialogEditText extends DialogEditorBase {
 
             boolean first = true;
 
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (first) {
@@ -184,26 +185,10 @@ public class DialogEditText extends DialogEditorBase {
         });
     }
 
-    private final ActionListener insertFormattingCodeListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String code = e.getActionCommand();
-
-            final RSyntaxTextArea ta = getTextArea();
-
-            ta.insert(code, ta.getCaretPosition());
-
-            ta.requestFocusInWindow();
-        }
-    };
-
-
     @Override
     protected String getTitleText() {
         return dlgTitle;
     }
-
 
     @Override
     protected void buildButtons(HBox buttons) {
@@ -226,12 +211,10 @@ public class DialogEditText extends DialogEditorBase {
         buttons.add(formatCodesPopup);
     }
 
-
     @Override
     protected String getInitialText() {
         return dlgText;
     }
-
 
     @Override
     protected void configureTextarea(RSyntaxTextArea ta) {
@@ -251,7 +234,6 @@ public class DialogEditText extends DialogEditorBase {
                 configureTextareaPlain(ta);
         }
     }
-
 
     @Override
     protected String getFileName() {
