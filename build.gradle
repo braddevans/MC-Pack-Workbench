@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.2.4'
+    implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
+    implementation 'com.fifesoft:rsyntaxtextarea:2.5.0'
+    implementation 'net.coobird:thumbnailator:0.4.6'
+    implementation 'org.swinglabs.swingx:swingx-all:1.6.5-1'
+}
+
+group = 'RPW'
+version = '3.8.3'
+description = 'ResourcePack Workbench'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
