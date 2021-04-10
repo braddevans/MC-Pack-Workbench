@@ -1,5 +1,22 @@
 package net.mightypork.rpw.gui.windows.popups;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
@@ -8,90 +25,26 @@ import net.mightypork.rpw.library.Sources;
 import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.tasks.Tasks;
 import net.mightypork.rpw.tree.assets.EAsset;
-import net.mightypork.rpw.tree.assets.processors.*;
+import net.mightypork.rpw.tree.assets.processors.ApplyInheritProcessor;
+import net.mightypork.rpw.tree.assets.processors.CopyToProjectProcessor;
+import net.mightypork.rpw.tree.assets.processors.CountNodesInProjectProcessor;
+import net.mightypork.rpw.tree.assets.processors.CountNodesOfTypeProcessor;
+import net.mightypork.rpw.tree.assets.processors.DeleteFromProjectProcessor;
+import net.mightypork.rpw.tree.assets.processors.SetToSourceProcessor;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeLeaf;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeProcessor;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PopupSelectedNodes {
 
-    private List<AssetTreeNode> nodes;
-    private final ActionListener listenerSetSimple = new ActionListener() {
+    public static PopupSelectedNodes open(Container c, int x, int y, List<AssetTreeNode> nodes) {
+        return new PopupSelectedNodes(c, x, y, nodes);
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String source = e.getActionCommand();
+    private List<AssetTreeNode> nodes = null;
 
-            final AssetTreeProcessor proc = new SetToSourceProcessor(source);
-            for (final AssetTreeNode node : nodes) {
-                proc.process(node);
-            }
-
-            Tasks.taskTreeRedraw();
-            App.getSidePanel().redrawPreview();
-            Projects.markChange();
-        }
-    };
-    private final ActionListener listenerSetRecursive = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String source = e.getActionCommand();
-
-            final AssetTreeProcessor proc = new SetToSourceProcessor(source);
-            for (final AssetTreeNode node : nodes) {
-                node.processThisAndChildren(proc);
-            }
-
-            Tasks.taskTreeRedraw();
-            App.getSidePanel().redrawPreview();
-            Projects.markChange();
-        }
-    };
-    private final ActionListener listenerResolveRecursive = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final AssetTreeProcessor proc = new ApplyInheritProcessor();
-            for (final AssetTreeNode node : nodes) {
-                node.processThisAndChildren(proc);
-            }
-
-            Tasks.taskTreeRedraw();
-            App.getSidePanel().redrawPreview();
-            Projects.markChange();
-        }
-    };
-    private final ActionListener listenerResolveOrInheritRecursive = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final ApplyInheritProcessor proc1 = new ApplyInheritProcessor(MagicSources.INHERIT);
-            for (final AssetTreeNode node : nodes) {
-                node.processThisAndChildren(proc1);
-            }
-
-            final SetToSourceProcessor proc2 = new SetToSourceProcessor(MagicSources.INHERIT);
-            proc2.setModifyLeaves(false); // do only groups
-            for (final AssetTreeNode node : nodes) {
-                node.processThisAndChildren(proc2);
-            }
-
-            Tasks.taskTreeRedraw();
-            App.getSidePanel().redrawPreview();
-            Projects.markChange();
-        }
-    };
     private JMenuItem itemCopyToProject;
     private JMenuItem itemDeleteFromProject;
     private JMenuItem itemDeleteMetaFromProject;
@@ -103,7 +56,20 @@ public class PopupSelectedNodes {
     private JMenuItem itemApplyResolved;
     private JMenuItem itemApplyResolvedOrInherit;
     private JMenuItem itemOpenInFM;
+
     private JMenuItem itemCopyToProjectSkipVanilla;
+
+
+    private JLabel makeLabel(String text) {
+        final JLabel label = new JLabel(text);
+        final Font f = new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, 12);
+        label.setFont(f);
+        label.setForeground(new Color(0x5555cc));
+        label.setBorder(BorderFactory.createEmptyBorder(3, 7, 3, 7));
+
+        return label;
+    }
+
 
     public PopupSelectedNodes(Container c, int x, int y, List<AssetTreeNode> nodes) {
         if (nodes == null) {
@@ -177,7 +143,7 @@ public class PopupSelectedNodes {
 
             if (nodes.get(0).isLeaf()) {
                 final AssetTreeLeaf leaf = (AssetTreeLeaf) nodes.get(0);
-                if (! leaf.isMetaProvidedByProject()) { item.setIcon(Icons.MENU_NEW); }
+                if (!leaf.isMetaProvidedByProject()) item.setIcon(Icons.MENU_NEW);
             }
             popup.add(item);
         }
@@ -235,8 +201,7 @@ public class PopupSelectedNodes {
             for (final Component cmp : list) {
                 if (cmp == null) {
                     submenu.addSeparator();
-                }
-                else {
+                } else {
                     submenu.add(cmp);
                 }
             }
@@ -250,8 +215,7 @@ public class PopupSelectedNodes {
         for (final Component cmp : list) {
             if (cmp == null) {
                 popup.addSeparator();
-            }
-            else {
+            } else {
                 popup.add(cmp);
             }
         }
@@ -263,49 +227,32 @@ public class PopupSelectedNodes {
 
     }
 
-    public static PopupSelectedNodes open(Container c, int x, int y, List<AssetTreeNode> nodes) {
-        return new PopupSelectedNodes(c, x, y, nodes);
-    }
-
-    private JLabel makeLabel(String text) {
-        final JLabel label = new JLabel(text);
-        final Font f = new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, 12);
-        label.setFont(f);
-        label.setForeground(new Color(0x5555cc));
-        label.setBorder(BorderFactory.createEmptyBorder(3, 7, 3, 7));
-
-        return label;
-    }
 
     private void addActions() {
         // selected
-        if (itemCollapse != null) {
-            itemCollapse.addActionListener(new ActionListener() {
+        if (itemCollapse != null) itemCollapse.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (final AssetTreeNode node : nodes) {
-                        if (node.isLeaf()) { continue; }
-                        App.getTreeDisplay().togglePathRecursively(node, false);
-                    }
-                    Tasks.taskTreeRedraw();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
+                    if (node.isLeaf()) continue;
+                    App.getTreeDisplay().togglePathRecursively(node, false);
                 }
-            });
-        }
+                Tasks.taskTreeRedraw();
+            }
+        });
 
-        if (itemExpand != null) {
-            itemExpand.addActionListener(new ActionListener() {
+        if (itemExpand != null) itemExpand.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (final AssetTreeNode node : nodes) {
-                        if (node.isLeaf()) { continue; }
-                        App.getTreeDisplay().togglePathRecursively(node, true);
-                    }
-                    Tasks.taskTreeRedraw();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
+                    if (node.isLeaf()) continue;
+                    App.getTreeDisplay().togglePathRecursively(node, true);
                 }
-            });
-        }
+                Tasks.taskTreeRedraw();
+            }
+        });
 
         itemCopyToProject.addActionListener(new ActionListener() {
 
@@ -318,7 +265,7 @@ public class PopupSelectedNodes {
                         Alerts.loading(true);
                         final AssetTreeProcessor procCopyToProject = new CopyToProjectProcessor();
                         final AssetTreeProcessor procSetToInherit = new SetToSourceProcessor(MagicSources.INHERIT);
-                        for (final AssetTreeNode node : nodes) {
+                        for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
                             node.processThisAndChildren(procCopyToProject);
                             node.processThisAndChildren(procSetToInherit);
                             node.setLibrarySourceIfNeeded(MagicSources.PROJECT);
@@ -329,8 +276,7 @@ public class PopupSelectedNodes {
                         Projects.markChange();
                         Alerts.loading(false);
                     }
-                })
-                ).start();
+                })).start();
             }
         });
 
@@ -349,7 +295,7 @@ public class PopupSelectedNodes {
 
                         final AssetTreeProcessor procSetToInherit = new SetToSourceProcessor(MagicSources.INHERIT);
 
-                        for (final AssetTreeNode node : nodes) {
+                        for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
                             node.processThisAndChildren(procCopyToProject);
                             node.processThisAndChildren(procSetToInherit);
                             node.setLibrarySourceIfNeeded(MagicSources.PROJECT);
@@ -363,8 +309,7 @@ public class PopupSelectedNodes {
                         Projects.markChange();
                         Alerts.loading(false);
                     }
-                })
-                ).start();
+                })).start();
             }
         });
 
@@ -377,11 +322,11 @@ public class PopupSelectedNodes {
                         App.getFrame(),
                         "Deletion",
                         "Are you sure to delete the\n" +
-                        "selected files from project?"
+                                "selected files from project?"
                 );
                 //@formatter:on
 
-                if (! really) { return; }
+                if (!really) return;
 
                 (new Thread(new Runnable() {
 
@@ -389,7 +334,7 @@ public class PopupSelectedNodes {
                     public void run() {
                         Alerts.loading(true);
                         final AssetTreeProcessor proc = new DeleteFromProjectProcessor();
-                        for (final AssetTreeNode node : nodes) {
+                        for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
                             node.processThisAndChildren(proc);
                         }
                         Tasks.taskDeleteEmptyDirsFromProject();
@@ -398,47 +343,43 @@ public class PopupSelectedNodes {
                         Projects.markChange();
                         Alerts.loading(false);
                     }
-                })
-                ).start();
+                })).start();
             }
         });
 
-        if (itemDeleteMetaFromProject != null) {
-            itemDeleteMetaFromProject.addActionListener(new ActionListener() {
+        if (itemDeleteMetaFromProject != null) itemDeleteMetaFromProject.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    //@formatter:off
-                    final boolean really = Alerts.askYesNo(
-                            App.getFrame(),
-                            "Deletion",
-                            "Are you sure to delete \"McMeta\" files\n" +
-                            "of the selected assets from project?"
-                    );
-                    //@formatter:on
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //@formatter:off
+                final boolean really = Alerts.askYesNo(
+                        App.getFrame(),
+                        "Deletion",
+                        "Are you sure to delete \"McMeta\" files\n" +
+                                "of the selected assets from project?"
+                );
+                //@formatter:on
 
-                    if (! really) { return; }
+                if (!really) return;
 
-                    (new Thread(new Runnable() {
+                (new Thread(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            Alerts.loading(true);
-                            final AssetTreeProcessor proc = new DeleteFromProjectProcessor(false, true);
-                            for (final AssetTreeNode node : nodes) {
-                                node.processThisAndChildren(proc);
-                            }
-                            Tasks.taskDeleteEmptyDirsFromProject();
-                            Tasks.taskTreeRedraw();
-                            App.getSidePanel().redrawPreview();
-                            Projects.markChange();
-                            Alerts.loading(false);
+                    @Override
+                    public void run() {
+                        Alerts.loading(true);
+                        final AssetTreeProcessor proc = new DeleteFromProjectProcessor(false, true);
+                        for (final AssetTreeNode node : PopupSelectedNodes.this.nodes) {
+                            node.processThisAndChildren(proc);
                         }
-                    })
-                    ).start();
-                }
-            });
-        }
+                        Tasks.taskDeleteEmptyDirsFromProject();
+                        Tasks.taskTreeRedraw();
+                        App.getSidePanel().redrawPreview();
+                        Projects.markChange();
+                        Alerts.loading(false);
+                    }
+                })).start();
+            }
+        });
 
         itemImportReplacement.addActionListener(new ActionListener() {
 
@@ -455,25 +396,22 @@ public class PopupSelectedNodes {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                File file = Projects.getActive().getAssetFile(((AssetTreeLeaf) nodes.get(0)).getAssetKey());
-                if (((AssetTreeLeaf) nodes.get(0)).getAssetKey().contains("models") && file.getPath().endsWith(".json")) {
+                File file = Projects.getActive().getAssetFile(((AssetTreeLeaf)nodes.get(0)).getAssetKey());
+                if (((AssetTreeLeaf)nodes.get(0)).getAssetKey().contains("models") && file.getPath().endsWith(".json")){
                     Tasks.taskEditModel((AssetTreeLeaf) nodes.get(0));
-                }
-                else {
+                } else {
                     Tasks.taskEditAsset((AssetTreeLeaf) nodes.get(0));
                 }
             }
         });
 
-        if (itemEditMeta != null) {
-            itemEditMeta.addActionListener(new ActionListener() {
+        if (itemEditMeta != null) itemEditMeta.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Tasks.taskEditMeta((AssetTreeLeaf) nodes.get(0));
-                }
-            });
-        }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Tasks.taskEditMeta((AssetTreeLeaf) nodes.get(0));
+            }
+        });
 
         itemOpenInFM.addActionListener(new ActionListener() {
 
@@ -483,6 +421,7 @@ public class PopupSelectedNodes {
             }
         });
     }
+
 
     private List<Component> buildMenuItems(boolean recursive) {
         final List<Component> items = new ArrayList<Component>();
@@ -545,4 +484,74 @@ public class PopupSelectedNodes {
 
         return items;
     }
+
+    private final ActionListener listenerSetSimple = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String source = e.getActionCommand();
+
+            final AssetTreeProcessor proc = new SetToSourceProcessor(source);
+            for (final AssetTreeNode node : nodes) {
+                proc.process(node);
+            }
+
+            Tasks.taskTreeRedraw();
+            App.getSidePanel().redrawPreview();
+            Projects.markChange();
+        }
+    };
+
+    private final ActionListener listenerSetRecursive = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String source = e.getActionCommand();
+
+            final AssetTreeProcessor proc = new SetToSourceProcessor(source);
+            for (final AssetTreeNode node : nodes) {
+                node.processThisAndChildren(proc);
+            }
+
+            Tasks.taskTreeRedraw();
+            App.getSidePanel().redrawPreview();
+            Projects.markChange();
+        }
+    };
+
+    private final ActionListener listenerResolveRecursive = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final AssetTreeProcessor proc = new ApplyInheritProcessor();
+            for (final AssetTreeNode node : nodes) {
+                node.processThisAndChildren(proc);
+            }
+
+            Tasks.taskTreeRedraw();
+            App.getSidePanel().redrawPreview();
+            Projects.markChange();
+        }
+    };
+
+    private final ActionListener listenerResolveOrInheritRecursive = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final ApplyInheritProcessor proc1 = new ApplyInheritProcessor(MagicSources.INHERIT);
+            for (final AssetTreeNode node : nodes) {
+                node.processThisAndChildren(proc1);
+            }
+
+            final SetToSourceProcessor proc2 = new SetToSourceProcessor(MagicSources.INHERIT);
+            proc2.setModifyLeaves(false); // do only groups
+            for (final AssetTreeNode node : nodes) {
+                node.processThisAndChildren(proc2);
+            }
+
+            Tasks.taskTreeRedraw();
+            App.getSidePanel().redrawPreview();
+            Projects.markChange();
+        }
+    };
 }

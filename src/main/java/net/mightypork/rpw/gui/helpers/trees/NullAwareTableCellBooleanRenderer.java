@@ -1,12 +1,17 @@
 package net.mightypork.rpw.gui.helpers.trees;
 
-import javax.swing.*;
+import java.awt.Component;
+
+import javax.swing.JCheckBox;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.UIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+
 
 /**
  * Checkbox renderer for boolean cells, rendering null as empty cell.
@@ -19,29 +24,30 @@ public class NullAwareTableCellBooleanRenderer extends JCheckBox implements Tabl
 
     private final DefaultTableCellRenderer cdr = new DefaultTableCellRenderer();
 
+
     public NullAwareTableCellBooleanRenderer() {
+        super();
         setHorizontalAlignment(SwingConstants.CENTER);
         setBorderPainted(true);
     }
 
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value == null) { return cdr.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column); }
+        if (value == null) return cdr.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
 
         if (isSelected) {
             setForeground(table.getSelectionForeground());
             setBackground(table.getSelectionBackground());
-        }
-        else {
+        } else {
             setForeground(table.getForeground());
             setBackground(table.getBackground());
         }
-        setSelected(((Boolean) value));
+        setSelected((((Boolean) value).booleanValue()));
 
         if (hasFocus) {
             setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
-        }
-        else {
+        } else {
             setBorder(noFocusBorder);
         }
 

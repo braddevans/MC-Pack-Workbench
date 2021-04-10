@@ -1,5 +1,18 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileFilter;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.gui.Gui;
@@ -8,11 +21,6 @@ import net.mightypork.rpw.gui.widgets.HBox;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
 public class DialogConfigureEditors extends RpwDialog {
 
@@ -56,85 +64,14 @@ public class DialogConfigureEditors extends RpwDialog {
 
     private JCheckBox ckInternalMeta;
     private JCheckBox ckInternalText;
-    private final ActionListener ckListener = new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final boolean internalText = ckInternalText.isSelected();
-            final boolean internalMeta = ckInternalMeta.isSelected();
-
-            final boolean cmdI = ckI.isSelected();
-            final boolean cmdT = ckT.isSelected() && (! internalMeta || ! internalText);
-            final boolean cmdA = ckA.isSelected();
-            final boolean cmdM = ckM.isSelected();
-
-            ckT.setEnabled(! internalMeta || ! internalText);
-
-            boxI.setEnabled(cmdI);
-            boxT.setEnabled(cmdT);
-            boxA.setEnabled(cmdA);
-            boxA.setEnabled(cmdM);
-
-            fieldCommandI.setEnabled(cmdI);
-            fieldCommandT.setEnabled(cmdT);
-            fieldCommandA.setEnabled(cmdA);
-            fieldCommandM.setEnabled(cmdM);
-
-            fieldArgsI.setEnabled(cmdI);
-            fieldArgsT.setEnabled(cmdT);
-            fieldArgsA.setEnabled(cmdA);
-            fieldArgsM.setEnabled(cmdM);
-
-            btnBrowseI.setEnabled(cmdI);
-            btnBrowseT.setEnabled(cmdT);
-            btnBrowseA.setEnabled(cmdA);
-            btnBrowseM.setEnabled(cmdM);
-
-            labelExI.setEnabled(cmdI);
-            labelExT.setEnabled(cmdT);
-            labelExA.setEnabled(cmdA);
-            labelExM.setEnabled(cmdM);
-
-            labelArI.setEnabled(cmdI);
-            labelArT.setEnabled(cmdT);
-            labelArA.setEnabled(cmdA);
-            labelArM.setEnabled(cmdM);
-        }
-    };
-    private final ActionListener saveListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Config.USE_AUDIO_EDITOR = ckA.isSelected();
-            Config.AUDIO_EDITOR = fieldCommandA.getText();
-            Config.AUDIO_EDITOR_ARGS = fieldArgsA.getText();
-
-            Config.USE_TEXT_EDITOR = ckT.isSelected();
-            Config.TEXT_EDITOR = fieldCommandT.getText();
-            Config.TEXT_EDITOR_ARGS = fieldArgsT.getText();
-
-            Config.USE_IMAGE_EDITOR = ckI.isSelected();
-            Config.IMAGE_EDITOR = fieldCommandI.getText();
-            Config.IMAGE_EDITOR_ARGS = fieldArgsI.getText();
-
-            Config.USE_MODEL_EDITOR = ckM.isSelected();
-            Config.MODEL_EDITOR = fieldCommandM.getText();
-            Config.MODEL_EDITOR_ARGS = fieldArgsM.getText();
-
-            Config.USE_INTERNAL_META_EDITOR = ckInternalMeta.isSelected();
-            Config.USE_INTERNAL_TEXT_EDITOR = ckInternalText.isSelected();
-
-            Config.save();
-
-            closeDialog();
-        }
-    };
 
     public DialogConfigureEditors() {
         super(App.getFrame(), "Configure Editors");
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -290,6 +227,7 @@ public class DialogConfigureEditors extends RpwDialog {
 
         vbox.add(section_vb);
 
+
         vbox.gapl();
         vbox.gapl();
 
@@ -320,12 +258,14 @@ public class DialogConfigureEditors extends RpwDialog {
 
     }
 
+
     @Override
     protected void initGui() {
         initFileChooser();
 
         initFields();
     }
+
 
     @Override
     protected void addActions() {
@@ -403,6 +343,7 @@ public class DialogConfigureEditors extends RpwDialog {
         });
     }
 
+
     private void initFields() {
         ckInternalMeta.setSelected(Config.USE_INTERNAL_META_EDITOR);
         ckInternalText.setSelected(Config.USE_INTERNAL_TEXT_EDITOR);
@@ -426,6 +367,7 @@ public class DialogConfigureEditors extends RpwDialog {
 
         ckListener.actionPerformed(null);
     }
+
 
     private void initFieldsDef() {
         ckInternalMeta.setSelected(Config.def_USE_INTERNAL_META_EDITOR);
@@ -451,6 +393,7 @@ public class DialogConfigureEditors extends RpwDialog {
         ckListener.actionPerformed(null);
     }
 
+
     private void initFileChooser() {
         fc = new JFileChooser();
         fc.setAcceptAllFileFilterUsed(false);
@@ -462,6 +405,7 @@ public class DialogConfigureEditors extends RpwDialog {
                 return "All files";
             }
 
+
             @Override
             public boolean accept(File f) {
                 return true;
@@ -470,7 +414,82 @@ public class DialogConfigureEditors extends RpwDialog {
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setMultiSelectionEnabled(false);
-        fc.setFileHidingEnabled(! Config.SHOW_HIDDEN_FILES);
+        fc.setFileHidingEnabled(!Config.SHOW_HIDDEN_FILES);
     }
+
+    private final ActionListener ckListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final boolean internalText = ckInternalText.isSelected();
+            final boolean internalMeta = ckInternalMeta.isSelected();
+
+            final boolean cmdI = ckI.isSelected();
+            final boolean cmdT = ckT.isSelected() && (!internalMeta || !internalText);
+            final boolean cmdA = ckA.isSelected();
+            final boolean cmdM = ckM.isSelected();
+
+            ckT.setEnabled(!internalMeta || !internalText);
+
+            boxI.setEnabled(cmdI);
+            boxT.setEnabled(cmdT);
+            boxA.setEnabled(cmdA);
+            boxA.setEnabled(cmdM);
+
+            fieldCommandI.setEnabled(cmdI);
+            fieldCommandT.setEnabled(cmdT);
+            fieldCommandA.setEnabled(cmdA);
+            fieldCommandM.setEnabled(cmdM);
+
+            fieldArgsI.setEnabled(cmdI);
+            fieldArgsT.setEnabled(cmdT);
+            fieldArgsA.setEnabled(cmdA);
+            fieldArgsM.setEnabled(cmdM);
+
+            btnBrowseI.setEnabled(cmdI);
+            btnBrowseT.setEnabled(cmdT);
+            btnBrowseA.setEnabled(cmdA);
+            btnBrowseM.setEnabled(cmdM);
+
+            labelExI.setEnabled(cmdI);
+            labelExT.setEnabled(cmdT);
+            labelExA.setEnabled(cmdA);
+            labelExM.setEnabled(cmdM);
+
+            labelArI.setEnabled(cmdI);
+            labelArT.setEnabled(cmdT);
+            labelArA.setEnabled(cmdA);
+            labelArM.setEnabled(cmdM);
+        }
+    };
+
+    private final ActionListener saveListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Config.USE_AUDIO_EDITOR = ckA.isSelected();
+            Config.AUDIO_EDITOR = fieldCommandA.getText();
+            Config.AUDIO_EDITOR_ARGS = fieldArgsA.getText();
+
+            Config.USE_TEXT_EDITOR = ckT.isSelected();
+            Config.TEXT_EDITOR = fieldCommandT.getText();
+            Config.TEXT_EDITOR_ARGS = fieldArgsT.getText();
+
+            Config.USE_IMAGE_EDITOR = ckI.isSelected();
+            Config.IMAGE_EDITOR = fieldCommandI.getText();
+            Config.IMAGE_EDITOR_ARGS = fieldArgsI.getText();
+
+            Config.USE_MODEL_EDITOR = ckM.isSelected();
+            Config.MODEL_EDITOR = fieldCommandM.getText();
+            Config.MODEL_EDITOR_ARGS = fieldArgsM.getText();
+
+            Config.USE_INTERNAL_META_EDITOR = ckInternalMeta.isSelected();
+            Config.USE_INTERNAL_TEXT_EDITOR = ckInternalText.isSelected();
+
+            Config.save();
+
+            closeDialog();
+        }
+    };
 
 }

@@ -2,6 +2,7 @@ package net.mightypork.rpw.utils;
 
 import net.mightypork.rpw.Config;
 
+
 /**
  * Project and library backward compatibility fixes
  *
@@ -12,9 +13,11 @@ public class Fixins {
         return (Config.LAST_RUN_VERSION <= 383);
     }
 
+
     public static boolean needFixProjectKeys(int lastRpwVersion) {
         return (lastRpwVersion <= 383);
     }
+
 
     public static String fixLibraryKey(String key) {
         key = key.replace("%", "%%");
@@ -24,6 +27,7 @@ public class Fixins {
 
         return key;
     }
+
 
     public static String fixProjectKey(String key) {
         return fixLibraryKey(key); // same functionality

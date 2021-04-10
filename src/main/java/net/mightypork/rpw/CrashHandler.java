@@ -1,6 +1,9 @@
 package net.mightypork.rpw;
 
-public class CrashHandler implements Thread.UncaughtExceptionHandler {
+import java.lang.Thread.UncaughtExceptionHandler;
+
+
+public class CrashHandler implements UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

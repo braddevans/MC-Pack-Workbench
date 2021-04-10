@@ -1,114 +1,132 @@
 package com.pixbits.rpw.stitcher;
 
-import java.awt.*;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.awt.Rectangle;
+import java.awt.Point;
+import java.util.*;
 
-public class AssetLayout implements Iterable<AssetImage> {
-    private final SortedSet<AssetImage> entries;
-    private Node tree;
 
-    AssetLayout() {
-        entries = new TreeSet<AssetImage>();
-    }
+public class AssetLayout implements Iterable<AssetImage>
+{
+	private final SortedSet<AssetImage> entries;
+	private Node tree;
 
-    static String rectToString(Rectangle rc) {
-        return "{" + rc.x + ", " + rc.y + ", " + rc.width + "x" + rc.height + "}";
-    }
 
-    @Override
-    public Iterator<AssetImage> iterator() {
-        return entries.iterator();
-    }
+	AssetLayout() {
+		entries = new TreeSet<AssetImage>();
+	}
 
-    void add(AssetImage asset) {
-        entries.add(asset);
-    }
 
-    private void reset() {
-        for (AssetImage asset : entries) { asset.reset(); }
-    }
+	@Override
+	public Iterator<AssetImage> iterator()
+	{
+		return entries.iterator();
+	}
 
-    Point computeLayout() {
-        int gw = 16, gh = 16;
 
-        while (! computeLayout(gw, gh)) {
-            if (gw > gh) { gh *= 2; }
-            else { gw *= 2; }
-        }
+	void add(AssetImage asset)
+	{
+		entries.add(asset);
+	}
 
-        return new Point(gw, gh);
-    }
 
-    public AssetImage first() {
-        return entries.first();
-    }
+	private void reset()
+	{
+		for (AssetImage asset : entries)
+			asset.reset();
+	}
 
-    private boolean computeLayout(int gw, int gh) {
-        reset();
-        tree = new Node(0, 0, gw, gh);
 
-        for (AssetImage asset : entries) {
-            Node n = tree.insert(asset);
+	Point computeLayout()
+	{
+		int gw = 16, gh = 16;
 
-            if (n == null) { return false; }
+		while (!computeLayout(gw, gh)) {
+			if (gw > gh) gh *= 2;
+			else gw *= 2;
+		}
 
-            // System.out.println("Inserted at "+rectToString(n.rc));
+		return new Point(gw, gh);
+	}
 
-            n.element = asset;
-            asset.place(n.rc.x, n.rc.y);
-        }
 
-        return true;
-    }
+	public AssetImage first()
+	{
+		return entries.first();
+	}
 
-    public Set<AssetImage> getEntries() {
-        return entries;
-    }
 
-    private static class Node {
-        final Node[] child = new Node[2];
-        final Rectangle rc;
-        AssetImage element;
+	static String rectToString(Rectangle rc)
+	{
+		return "{" + rc.x + ", " + rc.y + ", " + rc.width + "x" + rc.height + "}";
+	}
 
-        Node(int x, int y, int w, int h) {
-            rc = new Rectangle(x, y, w, h);
-        }
 
-        Node insert(AssetImage asset) {
-            if (element == null && child[0] != null && child[1] != null) {
-                Node newNode = child[0].insert(asset);
+	private boolean computeLayout(int gw, int gh)
+	{
+		reset();
+		tree = new Node(0, 0, gw, gh);
 
-                if (newNode != null) { return newNode; }
-                else {
-                    // System.out.println("Can't fit in "+rectToString(child[0].rc)+", testing other child");
-                    return child[1].insert(asset);
-                }
-            }
-            else {
-                if (element != null) { return null; }
+		for (AssetImage asset : entries) {
+			Node n = tree.insert(asset);
 
-                if (asset.width() > rc.width || asset.height() > rc.height) { return null; }
-                else if (asset.width() == rc.width && asset.height() == rc.height) { return this; }
+			if (n == null) return false;
 
-                int dw = rc.width - asset.width();
-                int dh = rc.height - asset.height();
+			// System.out.println("Inserted at "+rectToString(n.rc));
 
-                if (dw > dh) {
-                    child[0] = new Node(rc.x, rc.y, asset.width(), rc.height);
-                    child[1] = new Node(rc.x + asset.width(), rc.y, rc.width - asset.width(), rc.height);
-                }
-                else {
-                    child[0] = new Node(rc.x, rc.y, rc.width, asset.height());
-                    child[1] = new Node(rc.x, rc.y + asset.height(), rc.width, rc.height - asset.height());
-                }
+			n.element = asset;
+			asset.place(n.rc.x, n.rc.y);
+		}
 
-                // System.out.println("Splitting "+rectToString(rc)+" into "+rectToString(child[0].rc)+" and "+rectToString(child[1].rc));
+		return true;
+	}
 
-                return child[0].insert(asset);
-            }
-        }
-    }
+	private static class Node
+	{
+		final Node[] child = new Node[2];
+		final Rectangle rc;
+		AssetImage element;
+
+
+		Node(int x, int y, int w, int h) {
+			rc = new Rectangle(x, y, w, h);
+		}
+
+
+		Node insert(AssetImage asset)
+		{
+			if (element == null && child[0] != null && child[1] != null) {
+				Node newNode = child[0].insert(asset);
+
+				if (newNode != null) return newNode;
+				else {
+					// System.out.println("Can't fit in "+rectToString(child[0].rc)+", testing other child");
+					return child[1].insert(asset);
+				}
+			} else {
+				if (element != null) return null;
+
+				if (asset.width() > rc.width || asset.height() > rc.height) return null;
+				else if (asset.width() == rc.width && asset.height() == rc.height) return this;
+
+				int dw = rc.width - asset.width();
+				int dh = rc.height - asset.height();
+
+				if (dw > dh) {
+					child[0] = new Node(rc.x, rc.y, asset.width(), rc.height);
+					child[1] = new Node(rc.x + asset.width(), rc.y, rc.width - asset.width(), rc.height);
+				} else {
+					child[0] = new Node(rc.x, rc.y, rc.width, asset.height());
+					child[1] = new Node(rc.x, rc.y + asset.height(), rc.width, rc.height - asset.height());
+				}
+
+				// System.out.println("Splitting "+rectToString(rc)+" into "+rectToString(child[0].rc)+" and "+rectToString(child[1].rc));
+
+				return child[0].insert(asset);
+			}
+		}
+	}
+
+	public Set<AssetImage> getEntries() {
+		return entries;
+	}
 }

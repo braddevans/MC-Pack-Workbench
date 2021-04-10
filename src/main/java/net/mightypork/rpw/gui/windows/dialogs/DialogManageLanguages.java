@@ -5,6 +5,7 @@ import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.ClickListener;
 import net.mightypork.rpw.gui.widgets.SimpleStringList;
+import net.mightypork.rpw.gui.widgets.TreeDisplay;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
@@ -32,6 +33,7 @@ public class DialogManageLanguages extends RpwDialog {
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -62,13 +64,15 @@ public class DialogManageLanguages extends RpwDialog {
         return vb;
     }
 
-    private void updateLanguages() {
-        if (Projects.getActive().getCustomLanguages() != null) {
-            for (int i = 0; i < Projects.getActive().getCustomLanguages().size(); i++) {
-                languages.addItem(((LangEntry) Projects.getActive().getCustomLanguages().values().toArray()[i]).name);
+
+    private void updateLanguages(){
+        if(Projects.getActive().getCustomLanguages() != null){
+            for(int i = 0; i < Projects.getActive().getCustomLanguages().size(); i++){
+                languages.addItem(((LangEntry)Projects.getActive().getCustomLanguages().values().toArray()[i]).name);
             }
         }
     }
+
 
     @Override
     protected void addActions() {
@@ -91,8 +95,7 @@ public class DialogManageLanguages extends RpwDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     Gui.open(new DialogEditText(new File(Projects.getActive().getProjectDirectory().getPath() + "/custom_languages/" + Projects.getActive().getCustomLanguages().get(languages.getSelectedValue()).code + ".lang")));
-                }
-                catch (IOException exception) {
+                } catch(IOException exception){
                     exception.printStackTrace();
                 }
             }
@@ -124,9 +127,11 @@ public class DialogManageLanguages extends RpwDialog {
                 }
             }
 
+
             @Override
             public void keyReleased(KeyEvent e) {
             }
+
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -134,39 +139,39 @@ public class DialogManageLanguages extends RpwDialog {
         });
     }
 
+
     protected void onLanguageSelection() {
         if (languages.getSelectedValue() != null) {
             editLanguage.setEnabled(true);
             deleteLanguage.setEnabled(true);
-        }
-        else {
+        }else{
             editLanguage.setEnabled(false);
             deleteLanguage.setEnabled(false);
         }
     }
 
-    protected void deleteLanguage() {
+
+    protected void deleteLanguage(){
         final String language = languages.getSelectedValue();
 
-        if (language == null) { return; }
+        if (language == null) return;
 
         //@formatter:off
         final boolean y = Alerts.askYesNo(
-                this,
+                DialogManageLanguages.this,
                 "Delete Entry",
                 "Really want to to delete\n"
-                + "language \"" + language + "\"?"
+                        + "language \"" + language + "\"?"
         );
         //@formatter:on
 
-        if (! y) { return; }
+        if (!y) return;
 
         try {
-            if (Files.exists(Paths.get(Projects.getActive().getProjectDirectory().getPath() + "/custom_languages/" + Projects.getActive().getCustomLanguages().get(language).name + ".lang"))) {
+            if(Files.exists(Paths.get(Projects.getActive().getProjectDirectory().getPath() + "/custom_languages/" + Projects.getActive().getCustomLanguages().get(language).name + ".lang"))) {
                 Files.delete(Paths.get(Projects.getActive().getProjectDirectory().getPath() + "/custom_languages/" + Projects.getActive().getCustomLanguages().get(language).name + ".lang"));
             }
-        }
-        catch (IOException exception) {
+        }catch(IOException exception){
             exception.printStackTrace();
         }
         Projects.getActive().getCustomLanguages().remove(language);

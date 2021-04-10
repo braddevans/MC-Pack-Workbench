@@ -2,7 +2,8 @@ package net.mightypork.rpw.utils.logging;
 
 import java.util.logging.Level;
 
+
 public interface LogMonitor {
 
-    void log(Level level, String message);
+    public void log(Level level, String message);
 }

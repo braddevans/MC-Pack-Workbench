@@ -1,5 +1,17 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -8,18 +20,18 @@ import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.help.HelpPage;
 import net.mightypork.rpw.help.HelpStore;
 
-import javax.swing.*;
-import java.awt.*;
 
 public class DialogHelp extends RpwDialog {
 
     private JButton buttonOK;
+
 
     public DialogHelp() {
         super(App.getFrame(), "Quick Guide");
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -82,6 +94,7 @@ public class DialogHelp extends RpwDialog {
 
         return vb;
     }
+
 
     @Override
     protected void addActions() {

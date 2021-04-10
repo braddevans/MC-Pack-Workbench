@@ -9,8 +9,8 @@ public class PackInfo {
     }
 
     public PackInfo(int format, String desc) {
-        pack_format = format;
-        description = desc;
+        this.pack_format = format;
+        this.description = desc;
     }
 
     @Override

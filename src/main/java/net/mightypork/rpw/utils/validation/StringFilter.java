@@ -7,5 +7,5 @@ package net.mightypork.rpw.utils.validation;
  */
 public interface StringFilter {
 
-    boolean accept(String entry);
+    public boolean accept(String entry);
 }

@@ -1,28 +1,45 @@
 package net.mightypork.rpw.gui.windows.messages;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Insets;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 
-import javax.swing.*;
-import java.awt.*;
 
 public abstract class DialogTerminalBase extends RpwDialog {
 
     protected JTextArea textArea;
+
+
+    protected abstract String getHeadingText();
+
+
+    protected abstract String getLogText();
+
+
+    protected abstract boolean hasButtons();
+
+
+    protected abstract JButton[] makeButtons();
+
 
     public DialogTerminalBase(Frame parent, String title) {
         super(parent, title);
 
     }
 
-    protected abstract String getHeadingText();
-
-    protected abstract String getLogText();
-
-    protected abstract boolean hasButtons();
-
-    protected abstract JButton[] makeButtons();
 
     @Override
     protected final JComponent buildGui() {
@@ -61,14 +78,15 @@ public abstract class DialogTerminalBase extends RpwDialog {
         return vb;
     }
 
+
     /**
      * Add optional stuff above the textarea
      *
-     * @param vb
-     *         main vertical box
+     * @param vb main vertical box
      */
     protected void addStuffAboveTextarea(Box vb) {
     }
+
 
     @Override
     protected abstract void addActions();

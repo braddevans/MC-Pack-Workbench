@@ -1,8 +1,16 @@
 package net.mightypork.rpw.struct;
 
-import com.google.gson.*;
-
 import java.lang.reflect.Type;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 
 /**
  * Sound sub-entry (one of the sounds assigned to a sound entry)
@@ -10,35 +18,6 @@ import java.lang.reflect.Type;
  * @author Ondřej Hruška (MightyPork)
  */
 public class SoundSubEntry {
-
-    /**
-     * Resource name (path) - eg. random/splash
-     */
-    public String name;
-    /**
-     * Be streamed (not loaded all at once)
-     */
-    public boolean stream;
-
-    public SoundSubEntry() {
-    }
-
-    public SoundSubEntry(String name) {
-        name = name.replace('\\', '/');
-        this.name = name;
-        stream = false;
-    }
-
-    public SoundSubEntry(String name, boolean stream) {
-        name = name.replace('\\', '/');
-        this.name = name;
-        this.stream = stream;
-    }
-
-    @Override
-    public String toString() {
-        return "S(\"" + name + "\", stream: " + stream + ")";
-    }
 
     public static class Deserializer implements JsonDeserializer<SoundSubEntry> {
 
@@ -53,8 +32,7 @@ public class SoundSubEntry {
                 }
 
                 return new SoundSubEntry(json.getAsJsonPrimitive().getAsString());
-            }
-            catch (final ClassCastException e) {
+            } catch (final ClassCastException e) {
                 throw new JsonParseException("Failed to parse sound sub-entry.");
             }
         }
@@ -73,5 +51,38 @@ public class SoundSubEntry {
             jsonobj.addProperty("stream", src.stream);
             return jsonobj;
         }
+    }
+
+    /**
+     * Resource name (path) - eg. random/splash
+     */
+    public String name;
+    /**
+     * Be streamed (not loaded all at once)
+     */
+    public boolean stream = false;
+
+
+    public SoundSubEntry() {
+    }
+
+
+    public SoundSubEntry(String name) {
+        name = name.replace('\\', '/');
+        this.name = name;
+        this.stream = false;
+    }
+
+
+    public SoundSubEntry(String name, boolean stream) {
+        name = name.replace('\\', '/');
+        this.name = name;
+        this.stream = stream;
+    }
+
+
+    @Override
+    public String toString() {
+        return "S(\"" + name + "\", stream: " + stream + ")";
     }
 }

@@ -1,5 +1,37 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.TransferHandler;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.TreePath;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Const;
@@ -25,46 +57,36 @@ import net.mightypork.rpw.tree.filesystem.FileFsTreeNode;
 import net.mightypork.rpw.utils.AlphanumComparator;
 import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.OsUtils;
+
 import org.jdesktop.swingx.JXTitledSeparator;
 
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class DialogSoundWizard extends RpwDialog {
 
     private static final DataFlavor FLAVOR_FSTREE_FILE = new DataFlavor(FileFsTreeNode.class, "FSTREE_FILE_NODE");
-    protected boolean editStateValid;
+
     private JButton buttonDeleteKey;
     private JButton buttonDiscard;
     private JButton buttonNewKey;
     private JButton buttonOK;
     private JButton buttonSave;
+
     private JComboBox fieldCategory;
     private JTextField fieldKey;
     private JCheckBox ckStreamed;
+
     private SimpleStringList fileList;
     private SimpleStringList keyList;
     private SoundFileTreeDisplay treeDisplay;
-    private String editedKey;
-    private boolean flagEntryChanged;
-    private boolean suppressEditCheck;
+
+    private String editedKey = null;
+    private boolean flagEntryChanged = false;
+    private boolean suppressEditCheck = false;
+    protected boolean editStateValid = false;
+
     private SoundEntryMap soundMap;
     private ArrayList<Component> middlePanelComponents;
+
 
     public DialogSoundWizard() {
         super(App.getFrame(), "Sound Wizard");
@@ -72,10 +94,10 @@ public class DialogSoundWizard extends RpwDialog {
         createDialog();
     }
 
+
     @Override
     protected JComponent buildGui() {
-        HBox hbMain;
-        HBox hb;
+        HBox hbMain, hb;
         VBox vbMain;
 
         vbMain = new VBox();
@@ -118,6 +140,7 @@ public class DialogSoundWizard extends RpwDialog {
         return vbMain;
     }
 
+
     private Component createLeftPanel() {
         final VBox vb = new VBox();
 
@@ -137,6 +160,7 @@ public class DialogSoundWizard extends RpwDialog {
 
         return vb;
     }
+
 
     private Component createMiddlePanel() {
         middlePanelComponents = new ArrayList<Component>();
@@ -194,15 +218,16 @@ public class DialogSoundWizard extends RpwDialog {
         return vb;
     }
 
+
     private Component createRightPanel() {
         final VBox vb = new VBox();
 
         // file list
         Gui.titledBorder(vb, "All Audio Files", Gui.GAP);
 
-        if (Config.USE_NIMBUS) { Gui.useMetal(); }
+        if (Config.USE_NIMBUS) Gui.useMetal();
         treeDisplay = new SoundFileTreeDisplay(null, this);
-        if (Config.USE_NIMBUS) { Gui.useNimbusLaF(); }
+        if (Config.USE_NIMBUS) Gui.useNimbusLaF();
 
         vb.glue();
         final JComponent c = treeDisplay.getComponent();
@@ -216,6 +241,7 @@ public class DialogSoundWizard extends RpwDialog {
         return vb;
     }
 
+
     @Override
     protected void addActions() {
         setEnterButton(buttonSave);
@@ -228,15 +254,17 @@ public class DialogSoundWizard extends RpwDialog {
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     for (final String val : fileList.getSelectedValues()) {
                         fileList.removeItemNoSort(val);
-                        if (val.equals(editedKey)) { enableMiddlePanel(false); }
+                        if (val.equals(editedKey)) enableMiddlePanel(false);
                     }
                     fileList.sortAndUpdate();
                 }
             }
 
+
             @Override
             public void keyReleased(KeyEvent e) {
             }
+
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -268,18 +296,18 @@ public class DialogSoundWizard extends RpwDialog {
             public void actionPerformed(ActionEvent e) {
                 final String key = keyList.getSelectedValue();
 
-                if (key == null) { return; }
+                if (key == null) return;
 
                 //@formatter:off
                 final boolean y = Alerts.askYesNo(
                         DialogSoundWizard.this,
                         "Delete Entry",
                         "Really want to to delete\n"
-                        + "sound entry \"" + editedKey + "\"?"
+                                + "sound entry \"" + editedKey + "\"?"
                 );
                 //@formatter:on
 
-                if (! y) { return; }
+                if (!y) return;
 
                 keyList.removeItem(key);
 
@@ -318,16 +346,18 @@ public class DialogSoundWizard extends RpwDialog {
             public void changedUpdate(DocumentEvent e) {
                 final String txt = fieldKey.getText().trim();
 
-                editStateValid = txt.length() > 0 && (! keyList.contains(txt) || txt.equals(editedKey));
+                editStateValid = txt.length() > 0 && (!keyList.contains(txt) || txt.equals(editedKey));
 
-                if (! txt.equals(editedKey)) { markChange(); }
+                if (!txt.equals(editedKey)) markChange();
 
             }
+
 
             @Override
             public void insertUpdate(DocumentEvent e) {
                 changedUpdate(e);
             }
+
 
             @Override
             public void removeUpdate(DocumentEvent e) {
@@ -351,7 +381,7 @@ public class DialogSoundWizard extends RpwDialog {
                 final String key = fieldKey.getText().trim();
                 final String ctg = (String) fieldCategory.getSelectedItem();
 
-                if (! editStateValid) { return; }
+                if (!editStateValid) return;
 
                 keyList.removeItem(editedKey);
                 keyList.addItem(key);
@@ -393,20 +423,22 @@ public class DialogSoundWizard extends RpwDialog {
         buttonOK.addActionListener(closeListener);
     }
 
+
     private void enableMiddlePanel(boolean yes) {
         suppressEditCheck = true;
 
         for (final Component c : middlePanelComponents) {
             c.setEnabled(yes);
-            if (c instanceof JXTitledSeparator) { c.setForeground(yes ? Color.BLACK : Color.GRAY); }
-            if (c instanceof JTextField) { ((JTextField) c).setText(""); }
-            if (c instanceof JComboBox) { ((JComboBox) c).setSelectedItem(""); }
-            if (c instanceof SimpleStringList) { ((SimpleStringList) c).empty(); }
+            if (c instanceof JXTitledSeparator) c.setForeground(yes ? Color.BLACK : Color.GRAY);
+            if (c instanceof JTextField) ((JTextField) c).setText("");
+            if (c instanceof JComboBox) ((JComboBox) c).setSelectedItem("");
+            if (c instanceof SimpleStringList) ((SimpleStringList) c).empty();
         }
 
         suppressEditCheck = false;
 
     }
+
 
     private void clearChange() {
         flagEntryChanged = false;
@@ -414,9 +446,11 @@ public class DialogSoundWizard extends RpwDialog {
         editedKey = null;
     }
 
+
     private boolean hasChange() {
         return editedKey != null && flagEntryChanged;
     }
+
 
     @Override
     protected void initGui() {
@@ -425,6 +459,7 @@ public class DialogSoundWizard extends RpwDialog {
 
         initLists();
     }
+
 
     private void initLists() {
         rebuildFileTree();
@@ -439,6 +474,7 @@ public class DialogSoundWizard extends RpwDialog {
 
     }
 
+
     private void markChange() {
         if (suppressEditCheck) {
             return;
@@ -450,28 +486,31 @@ public class DialogSoundWizard extends RpwDialog {
         buttonSave.setEnabled(editStateValid);
     }
 
+
     public void nodeRemoved(AbstractFsTreeNode node) {
         node.getParent().reload();
         treeDisplay.model.nodeStructureChanged(node.getParent());
     }
 
+
     @Override
     public void onClose() {
     }
 
+
     protected void onKeyListSelection() {
         final int i = keyList.getSelectedIndex();
-        buttonDeleteKey.setEnabled(i != - 1);
+        buttonDeleteKey.setEnabled(i != -1);
 
-        if (i != - 1) {
+        if (i != -1) {
             final String sel = keyList.getSelectedValue();
 
-            if (sel.equals(editedKey)) { return; }
+            if (sel.equals(editedKey)) return;
 
             if (hasChange()) {
-                final boolean y = Alerts.askYesNo(this, "Discard Changes", "Discard changes in \"" + editedKey + "\"?");
+                final boolean y = Alerts.askYesNo(DialogSoundWizard.this, "Discard Changes", "Discard changes in \"" + editedKey + "\"?");
 
-                if (! y) {
+                if (!y) {
                     keyList.list.setSelectedValue(editedKey, true);
                     return;
                 }
@@ -509,10 +548,12 @@ public class DialogSoundWizard extends RpwDialog {
         }
     }
 
+
     public void pathChanged(AbstractFsTreeNode node) {
-        if (node instanceof DirectoryFsTreeNode) { ((DirectoryFsTreeNode) node).reload(); }
+        if (node instanceof DirectoryFsTreeNode) ((DirectoryFsTreeNode) node).reload();
         treeDisplay.model.nodeStructureChanged(node);
     }
+
 
     private void rebuildEntryList() {
         final List<String> opts = new ArrayList<String>();
@@ -526,6 +567,7 @@ public class DialogSoundWizard extends RpwDialog {
         keyList.setItems(opts);
     }
 
+
     private void rebuildFileTree() {
         final DirectoryFsTreeNode root = new DirectoryFsTreeNode("(root)");
 
@@ -536,9 +578,11 @@ public class DialogSoundWizard extends RpwDialog {
 
             @Override
             public boolean accept(File file) {
-                if (file.isDirectory()) { return true; }
+                if (file.isDirectory()) return true;
 
-                return EAsset.forFile(file).isSound();
+                if (!EAsset.forFile(file).isSound()) return false;
+
+                return true;
             }
         };
 
@@ -559,25 +603,27 @@ public class DialogSoundWizard extends RpwDialog {
 
         @Override
         public boolean canImport(TransferSupport support) {
-            if (! support.isDrop()) { return false; }
+            if (!support.isDrop()) return false;
 
-            if (! fileList.isEnabled()) { return false; }
+            if (!fileList.isEnabled()) return false;
 
-            if (! support.isDataFlavorSupported(FLAVOR_FSTREE_FILE)) { return false; }
+            if (!support.isDataFlavorSupported(FLAVOR_FSTREE_FILE)) return false;
 
             support.setShowDropLocation(true);
 
             return true;
         }
 
+
         @Override
         public int getSourceActions(JComponent comp) {
-            return TransferHandler.COPY;
+            return COPY;
         }
+
 
         @Override
         public boolean importData(TransferSupport support) {
-            if (! canImport(support)) { return false; }
+            if (!canImport(support)) return false;
 
             try {
                 final Transferable trans = support.getTransferable();
@@ -591,7 +637,7 @@ public class DialogSoundWizard extends RpwDialog {
                     // Fix Windoze backslashes
                     path = path.replace('\\', '/');
 
-                    if (! fileList.contains(path)) {
+                    if (!fileList.contains(path)) {
                         fileList.addItemNoSort(path);
                         changed = true;
                     }
@@ -602,16 +648,13 @@ public class DialogSoundWizard extends RpwDialog {
                     markChange();
                 }
 
-            }
-            catch (final UnsupportedFlavorException e) {
+            } catch (final UnsupportedFlavorException e) {
                 e.printStackTrace();
                 return false;
-            }
-            catch (final IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
                 return false;
-            }
-            catch (final RuntimeException e) {
+            } catch (final RuntimeException e) {
                 e.printStackTrace();
             }
 
@@ -624,10 +667,12 @@ public class DialogSoundWizard extends RpwDialog {
 
         private List<FileFsTreeNode> tmpNodeList;
 
+
         @Override
         public boolean canImport(TransferSupport support) {
-            return ! support.isDataFlavorSupported(FLAVOR_FSTREE_FILE);
+            return !support.isDataFlavorSupported(FLAVOR_FSTREE_FILE);
         }
+
 
         @Override
         protected Transferable createTransferable(JComponent c) {
@@ -640,31 +685,33 @@ public class DialogSoundWizard extends RpwDialog {
                 final AbstractFsTreeNode fsnode = (AbstractFsTreeNode) path.getLastPathComponent();
                 if (fsnode.isDirectory()) {
                     recursiveAddChildrenToTmpList((DirectoryFsTreeNode) fsnode);
-                }
-                else {
+                } else {
                     tmpNodeList.add((FileFsTreeNode) fsnode);
                 }
             }
 
-            if (tmpNodeList.size() == 0) { return null; }
+            if (tmpNodeList.size() == 0) return null;
 
             return new Transferable() {
 
                 private final List<FileFsTreeNode> nodes = tmpNodeList;
 
+
                 @Override
                 public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-                    if (! isDataFlavorSupported(flavor)) { throw new UnsupportedFlavorException(flavor); }
+                    if (!isDataFlavorSupported(flavor)) throw new UnsupportedFlavorException(flavor);
 
-                    if (flavor.equals(FLAVOR_FSTREE_FILE)) { return nodes; }
+                    if (flavor.equals(FLAVOR_FSTREE_FILE)) return nodes;
 
                     return null;
                 }
+
 
                 @Override
                 public DataFlavor[] getTransferDataFlavors() {
                     return new DataFlavor[]{FLAVOR_FSTREE_FILE};
                 }
+
 
                 @Override
                 public boolean isDataFlavorSupported(DataFlavor flavor) {
@@ -673,10 +720,12 @@ public class DialogSoundWizard extends RpwDialog {
             };
         }
 
+
         @Override
         public int getSourceActions(JComponent comp) {
-            return TransferHandler.COPY;
+            return COPY;
         }
+
 
         @Override
         public boolean importData(TransferSupport support) {
@@ -699,20 +748,19 @@ public class DialogSoundWizard extends RpwDialog {
                     fileList.sortAndUpdate();
                 }
 
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
             }
 
             return true;
         }
+
 
         private void recursiveAddChildrenToTmpList(DirectoryFsTreeNode fsnode) {
             for (int i = 0; i < fsnode.getChildCount(); i++) {
                 final AbstractFsTreeNode fsn = fsnode.getChildAt(i);
                 if (fsn.isFile()) {
                     tmpNodeList.add((FileFsTreeNode) fsn);
-                }
-                else {
+                } else {
                     recursiveAddChildrenToTmpList((DirectoryFsTreeNode) fsn);
                 }
             }

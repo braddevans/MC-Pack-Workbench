@@ -1,5 +1,8 @@
 package net.mightypork.rpw.tree.assets.processors;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.mightypork.rpw.library.MagicSources;
 import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeGroup;
@@ -7,35 +10,33 @@ import net.mightypork.rpw.tree.assets.tree.AssetTreeLeaf;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeProcessor;
 
-import java.util.HashSet;
-import java.util.Set;
 
 public class CountNodesInProjectProcessor implements AssetTreeProcessor {
 
+    private int groups = 0;
+    private int count = 0;
+    private int countMeta = 0;
+    private int leaves = 0;
+    private int vanillaLeaves = 0;
+    private int metaLeaves = 0;
+
     private final Set<AssetTreeNode> processed = new HashSet<AssetTreeNode>();
-    private int groups;
-    private int count;
-    private int countMeta;
-    private int leaves;
-    private int vanillaLeaves;
-    private int metaLeaves;
+
 
     public CountNodesInProjectProcessor() {
     }
 
+
     @Override
     public void process(AssetTreeNode node) {
-        if (processed.contains(node)) {
-            return; // no double-processing
-        }
+        if (processed.contains(node)) return; // no double-processing
         processed.add(node);
 
         if (node instanceof AssetTreeGroup) {
             groups++;
             return; // we want leafs
 
-        }
-        else if (node instanceof AssetTreeLeaf) {
+        } else if (node instanceof AssetTreeLeaf) {
             final AssetTreeLeaf leaf = (AssetTreeLeaf) node;
 
             leaves++;
@@ -59,25 +60,31 @@ public class CountNodesInProjectProcessor implements AssetTreeProcessor {
         }
     }
 
+
     public int getInProject() {
         return count;
     }
+
 
     public int getInProjectMeta() {
         return countMeta;
     }
 
+
     public int getGroups() {
         return groups;
     }
+
 
     public int getLeaves() {
         return leaves;
     }
 
+
     public int getVanillaLeaves() {
         return vanillaLeaves;
     }
+
 
     public int getMetaLeaves() {
         return metaLeaves;

@@ -1,31 +1,36 @@
 package net.mightypork.rpw.gui.helpers.trees;
 
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+
 import net.mightypork.rpw.gui.helpers.PopupTriggerListener;
 import net.mightypork.rpw.gui.windows.dialogs.DialogSoundWizard;
 import net.mightypork.rpw.gui.windows.popups.PopupSoundFsTreeNode;
 import net.mightypork.rpw.tree.filesystem.AbstractFsTreeNode;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SoundFileTreeClickListener extends PopupTriggerListener {
 
     private final DialogSoundWizard wizard;
-    private final JTree tree;
+
 
     public SoundFileTreeClickListener(JTree tree, DialogSoundWizard wizard) {
         this.tree = tree;
         this.wizard = wizard;
     }
 
+    private final JTree tree;
+
+
     @Override
     public void onPopupTrigger(MouseEvent e) {
         final TreePath pathUnderMouse = tree.getPathForLocation(e.getX(), e.getY());
-        if (pathUnderMouse == null) { return; }
+        if (pathUnderMouse == null) return;
 
         TreePath[] paths = tree.getSelectionPaths();
 
@@ -40,7 +45,7 @@ public class SoundFileTreeClickListener extends PopupTriggerListener {
             }
         }
 
-        if (! clickedOnSelected) {
+        if (!clickedOnSelected) {
             tree.getSelectionModel().setSelectionPath(pathUnderMouse);
             paths = new TreePath[]{pathUnderMouse};
         }
@@ -57,7 +62,7 @@ public class SoundFileTreeClickListener extends PopupTriggerListener {
             tmpNodeList.add(fsnode);
         }
 
-        if (tmpNodeList.size() == 0) { return; }
+        if (tmpNodeList.size() == 0) return;
 
         PopupSoundFsTreeNode.open(tree, e.getX(), e.getY(), tmpNodeList, wizard);
 

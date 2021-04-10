@@ -1,5 +1,15 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+
+import com.sun.prism.paint.Color;
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Const;
 import net.mightypork.rpw.Paths;
@@ -10,11 +20,6 @@ import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.utils.files.DesktopApi;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URL;
 
 public class DialogAbout extends RpwDialog {
 
@@ -23,11 +28,13 @@ public class DialogAbout extends RpwDialog {
     private JButton buttonGitHub;
     private JButton buttonTwitterRpw;
 
+
     public DialogAbout() {
         super(App.getFrame(), "About");
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -58,6 +65,7 @@ public class DialogAbout extends RpwDialog {
         return vb;
     }
 
+
     @Override
     protected void addActions() {
         buttonOK.addActionListener(closeListener);
@@ -68,8 +76,7 @@ public class DialogAbout extends RpwDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     DesktopApi.browse(new URL(Paths.URL_RPW_WEB).toURI());
-                }
-                catch (final Exception err) {
+                } catch (final Exception err) {
                     Log.e(err);
                 }
             }
@@ -81,8 +88,7 @@ public class DialogAbout extends RpwDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     DesktopApi.browse(new URL(Paths.URL_GITHUB_REPO).toURI());
-                }
-                catch (final Exception err) {
+                } catch (final Exception err) {
                     Log.e(err);
                 }
             }
@@ -94,8 +100,7 @@ public class DialogAbout extends RpwDialog {
             public void actionPerformed(ActionEvent e) {
                 try {
                     DesktopApi.browse(new URL("https://twitter.com/RPWapp").toURI());
-                }
-                catch (final Exception err) {
+                } catch (final Exception err) {
                     Log.e(err);
                 }
             }

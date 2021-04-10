@@ -1,13 +1,22 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.*;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
+import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.CharInputListener;
 import net.mightypork.rpw.gui.helpers.FileChooser;
 import net.mightypork.rpw.gui.helpers.TextInputValidator;
 import net.mightypork.rpw.gui.widgets.FileInput;
+import net.mightypork.rpw.gui.widgets.FileInput.FilePickListener;
 import net.mightypork.rpw.gui.widgets.HBox;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
@@ -18,106 +27,33 @@ import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DialogNewProject extends RpwDialog {
 
     private final List<String> projectNames;
-    private final List<JComponent> nameFieldGroup = new ArrayList<JComponent>();
-    private final List<JComponent> respackGroup = new ArrayList<JComponent>();
+
     private JTextField nameField;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JRadioButton radioBlank;
     private JRadioButton radioResourcePack;
     private JComboBox assetVersion;
-    private boolean usePackFile;
+
+    private final List<JComponent> nameFieldGroup = new ArrayList<JComponent>();
+
+    private boolean usePackFile = false;
+
+    private final List<JComponent> respackGroup = new ArrayList<JComponent>();
+
     private JCheckBox ckKeepTitle;
 
     private FileInput filepicker;
-    private final ActionListener createListener = new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String name = nameField.getText();
-
-            if (name == null) {
-                name = "";
-            }
-
-            name = name.trim();
-            if (name.length() == 0) {
-                Alerts.error(self(), "Invalid name", "Missing project name!");
-                return;
-            }
-
-            if (usePackFile && ! filepicker.hasFile()) {
-                Alerts.error(self(), "Missing file", "The selected file does not exist.");
-                return;
-            }
-
-            if (projectNames.contains(name)) {
-                Alerts.error(self(), "Name already used", "Project named \"" + name + "\" already exists!");
-                return;
-            }
-
-            final File file = filepicker.getFile();
-
-            // create the project
-
-            final String projname = name;
-
-            Tasks.taskAskToSaveIfChanged(new Runnable() {
-
-                @Override
-                public void run() {
-                    // OK name
-                    closeDialog();
-
-                    Alerts.loading(true);
-                    Projects.openNewProject(projname);
-                    Projects.getActive().setCurrentMcVersion(assetVersion.getSelectedItem().toString());
-                    Config.LIBRARY_VERSION = assetVersion.getSelectedItem().toString();
-
-                    Tasks.taskStoreProjectChanges();
-
-                    //Projects.getActive().revert();
-
-                    Projects.markProjectAsRecent(Projects.getActive().getName());
-
-                    if (usePackFile) {
-                        Tasks.taskPopulateProjectFromPack(file, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                //Projects.getActive().revert();
-
-                                Tasks.taskOnProjectChanged();
-                                Alerts.loading(false);
-                            }
-                        });
-                    }
-                    else {
-                        Tasks.taskOnProjectChanged();
-                        Alerts.loading(false);
-                    }
-
-                }
-            });
-
-        }
-    };
     /**
      * Name has not been changed manually yet
      */
     private boolean nameIsPristine;
+
 
     public DialogNewProject() {
         super(App.getFrame(), "New Project");
@@ -129,10 +65,10 @@ public class DialogNewProject extends RpwDialog {
         createDialog();
     }
 
+
     @Override
     protected JComponent buildGui() {
-        HBox hb;
-        HBox hb2;
+        HBox hb, hb2;
         final VBox vbox = new VBox();
         vbox.windowPadding();
 
@@ -165,7 +101,7 @@ public class DialogNewProject extends RpwDialog {
         hb.add(filepicker = new FileInput(
                         this,
                         "Select resoucepack file...",
-                        Config.FilePath.IMPORT_PACK,
+                        FilePath.IMPORT_PACK,
                         "Select resourcepack to import as project",
                         FileChooser.FOLDERS_ZIP,
                         true
@@ -245,6 +181,7 @@ public class DialogNewProject extends RpwDialog {
         return vbox;
     }
 
+
     private void enableFilePicker(boolean enable) {
         for (final JComponent j : respackGroup) {
             j.setEnabled(enable);
@@ -255,6 +192,7 @@ public class DialogNewProject extends RpwDialog {
     protected void initGui() {
         enableFilePicker(false);
     }
+
 
     @Override
     public void onClose() {
@@ -301,7 +239,7 @@ public class DialogNewProject extends RpwDialog {
             }
         });
 
-        filepicker.setListener(new FileInput.FilePickListener() {
+        filepicker.setListener(new FilePickListener() {
 
             @Override
             public void onFileSelected(File f) {
@@ -312,8 +250,7 @@ public class DialogNewProject extends RpwDialog {
                         if (nameField.getText().trim().length() == 0) {
                             nameField.setText(parts[0]);
                         }
-                    }
-                    catch (final Throwable t) {
+                    } catch (final Throwable t) {
                         Log.e(t);
                     }
                 }
@@ -321,5 +258,77 @@ public class DialogNewProject extends RpwDialog {
             }
         });
     }
+
+    private final ActionListener createListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String name = nameField.getText();
+
+            if (name == null) {
+                name = "";
+            }
+
+            name = name.trim();
+            if (name.length() == 0) {
+                Alerts.error(self(), "Invalid name", "Missing project name!");
+                return;
+            }
+
+            if (usePackFile && !filepicker.hasFile()) {
+                Alerts.error(self(), "Missing file", "The selected file does not exist.");
+                return;
+            }
+
+            if (projectNames.contains(name)) {
+                Alerts.error(self(), "Name already used", "Project named \"" + name + "\" already exists!");
+                return;
+            }
+
+            final File file = filepicker.getFile();
+
+            // create the project
+
+            final String projname = name;
+
+            Tasks.taskAskToSaveIfChanged(new Runnable() {
+
+                @Override
+                public void run() {
+                    // OK name
+                    closeDialog();
+
+                    Alerts.loading(true);
+                    Projects.openNewProject(projname);
+                    Projects.getActive().setCurrentMcVersion(assetVersion.getSelectedItem().toString());
+                    Config.LIBRARY_VERSION = assetVersion.getSelectedItem().toString();
+
+                    Tasks.taskStoreProjectChanges();
+
+                    //Projects.getActive().revert();
+
+                    Projects.markProjectAsRecent(Projects.getActive().getName());
+
+                    if (usePackFile) {
+                        Tasks.taskPopulateProjectFromPack(file, new Runnable() {
+
+                            @Override
+                            public void run() {
+                                //Projects.getActive().revert();
+
+                                Tasks.taskOnProjectChanged();
+                                Alerts.loading(false);
+                            }
+                        });
+                    } else {
+                        Tasks.taskOnProjectChanged();
+                        Alerts.loading(false);
+                    }
+
+                }
+            });
+
+        }
+    };
 
 }

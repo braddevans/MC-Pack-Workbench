@@ -7,20 +7,25 @@ public interface IFileTreeNode {
      *
      * @return is directory
      */
-    boolean isDirectory();
+    public boolean isDirectory();
+
 
     /**
      * Get if this node is a file node.
      *
      * @return is file
      */
-    boolean isFile();
+    public boolean isFile();
 
-    boolean isSound();
 
-    boolean isImage();
+    public boolean isSound();
 
-    boolean isText();
 
-    boolean isJson();
+    public boolean isImage();
+
+
+    public boolean isText();
+
+
+    public boolean isJson();
 }

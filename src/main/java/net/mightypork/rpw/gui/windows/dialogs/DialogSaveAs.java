@@ -1,5 +1,13 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -10,10 +18,6 @@ import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.tasks.Tasks;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
 
 public class DialogSaveAs extends RpwDialog {
 
@@ -23,33 +27,7 @@ public class DialogSaveAs extends RpwDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField titleField;
-    private final ActionListener saveListener = new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String name = nameField.getText().trim();
-            if (name.length() == 0) {
-                Alerts.error(self(), "Invalid name", "Missing project name!");
-                return;
-            }
-
-            final String title = titleField.getText().trim();
-            if (name.length() == 0) {
-                Alerts.error(self(), "Invalid title", "Missing project title!");
-                return;
-            }
-
-            if (projectNames.contains(name)) {
-                Alerts.error(self(), "Invalid name", "Project named \"" + name + "\" already exists!");
-                return;
-            }
-            else {
-                // OK name
-                Tasks.taskSaveProjectAs(name, title);
-                closeDialog();
-            }
-        }
-    };
 
     public DialogSaveAs() {
         super(App.getFrame(), "Save As...");
@@ -58,6 +36,7 @@ public class DialogSaveAs extends RpwDialog {
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -85,16 +64,19 @@ public class DialogSaveAs extends RpwDialog {
         return vb;
     }
 
+
     @Override
     public void onClose() {
         // do nothing
     }
+
 
     @Override
     protected void onShown() {
         nameField.setText(Projects.getActive().getName());
         titleField.setText(Projects.getActive().getTitle());
     }
+
 
     @Override
     protected void addActions() {
@@ -103,4 +85,31 @@ public class DialogSaveAs extends RpwDialog {
         buttonOK.addActionListener(saveListener);
         buttonCancel.addActionListener(closeListener);
     }
+
+    private final ActionListener saveListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String name = nameField.getText().trim();
+            if (name.length() == 0) {
+                Alerts.error(self(), "Invalid name", "Missing project name!");
+                return;
+            }
+
+            final String title = titleField.getText().trim();
+            if (name.length() == 0) {
+                Alerts.error(self(), "Invalid title", "Missing project title!");
+                return;
+            }
+
+            if (projectNames.contains(name)) {
+                Alerts.error(self(), "Invalid name", "Project named \"" + name + "\" already exists!");
+                return;
+            } else {
+                // OK name
+                Tasks.taskSaveProjectAs(name, title);
+                closeDialog();
+            }
+        }
+    };
 }

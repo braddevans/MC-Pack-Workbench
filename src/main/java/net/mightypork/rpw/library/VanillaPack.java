@@ -1,14 +1,15 @@
 package net.mightypork.rpw.library;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.tasks.TaskLoadVanillaStructure;
 import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.utils.files.OsUtils;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Storage for information about vanilla pack
@@ -19,6 +20,7 @@ public class VanillaPack extends Source {
 
     private Map<String, AssetEntry> keyToAssetDict = new LinkedHashMap<String, AssetEntry>();
 
+
     /**
      * Load entries from data file
      */
@@ -26,32 +28,33 @@ public class VanillaPack extends Source {
         TaskLoadVanillaStructure.run();
     }
 
+
     @Override
     public boolean doesProvideAsset(String key) {
         return keyToAssetDict.containsKey(key);
     }
 
+
     /**
      * Get asset for assetKey
      *
-     * @param key
-     *         assetKey
-     *
+     * @param key assetKey
      * @return asset entry
      */
     public AssetEntry getAssetForKey(String key) {
         return keyToAssetDict.get(key);
     }
 
+
     /**
      * Store asset entries loaded in a task
      *
-     * @param assets
-     *         entries
+     * @param assets entries
      */
     public void setAssets(Map<String, AssetEntry> assets) {
         keyToAssetDict = assets;
     }
+
 
     /**
      * Get all asset keys
@@ -62,6 +65,7 @@ public class VanillaPack extends Source {
         return keyToAssetDict.keySet();
     }
 
+
     /**
      * Get all asset entries
      *
@@ -70,6 +74,7 @@ public class VanillaPack extends Source {
     public Collection<AssetEntry> getAssetEntries() {
         return keyToAssetDict.values();
     }
+
 
     @Override
     public File getAssetsDirectory() {

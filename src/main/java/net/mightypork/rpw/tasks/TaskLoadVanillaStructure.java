@@ -1,9 +1,19 @@
 package net.mightypork.rpw.tasks;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.Flags;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.library.Sources;
+import net.mightypork.rpw.project.Project;
+import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.tree.assets.AssetEntry;
 import net.mightypork.rpw.tree.assets.EAsset;
 import net.mightypork.rpw.utils.Fixins;
@@ -12,11 +22,6 @@ import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.files.SimpleConfig;
 import net.mightypork.rpw.utils.logging.Log;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class TaskLoadVanillaStructure {
 
@@ -32,7 +37,7 @@ public class TaskLoadVanillaStructure {
 
         final File structureFile = OsUtils.getAppDir(Paths.DIR_VANILLA + "/" + Config.LIBRARY_VERSION + "/structure.dat");
 
-        if (! structureFile.exists()) {
+        if (!structureFile.exists()) {
             return; // success == false
         }
 
@@ -48,7 +53,7 @@ public class TaskLoadVanillaStructure {
                 fixedMap = new HashMap<String, String>(saveMap.size());
             }
 
-            for (final Map.Entry<String, String> e : saveMap.entrySet()) {
+            for (final Entry<String, String> e : saveMap.entrySet()) {
                 try {
                     final String k1 = e.getKey();
                     final String v = e.getValue();
@@ -63,10 +68,9 @@ public class TaskLoadVanillaStructure {
                     final EAsset type = EAsset.valueOf(v);
                     final AssetEntry ae = new AssetEntry(k, type);
                     assets.put(e.getKey(), ae);
-                    if (Config.LOG_VANILLA_LOAD_STRUCTURE) { Log.f3("+ " + ae); }
+                    if (Config.LOG_VANILLA_LOAD_STRUCTURE) Log.f3("+ " + ae);
 
-                }
-                catch (final IllegalArgumentException iae) {
+                } catch (final IllegalArgumentException iae) {
                     Log.w("Unknown asset type " + e.getValue() + " - skipping entry.");
                 }
             }
@@ -76,8 +80,7 @@ public class TaskLoadVanillaStructure {
                 SimpleConfig.mapToFile(structureFile, fixedMap, false);
             }
 
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             Log.e(e);
             return; // success = false
         }

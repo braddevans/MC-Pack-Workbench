@@ -1,13 +1,23 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 import net.mightypork.rpw.App;
-import net.mightypork.rpw.Config;
+import net.mightypork.rpw.Config.FilePath;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.helpers.FileChooser;
 import net.mightypork.rpw.gui.helpers.TextInputValidator;
 import net.mightypork.rpw.gui.widgets.FileInput;
+import net.mightypork.rpw.gui.widgets.FileInput.FilePickListener;
 import net.mightypork.rpw.gui.widgets.VBox;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
@@ -19,11 +29,6 @@ import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.files.ZipUtils;
 import net.mightypork.rpw.utils.validation.StringFilter;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.List;
 
 public class DialogImportPack extends RpwDialog {
 
@@ -35,11 +40,94 @@ public class DialogImportPack extends RpwDialog {
     private JButton buttonCancel;
 
     private FileInput filepicker;
+
+
+    public DialogImportPack() {
+        super(App.getFrame(), "Import");
+
+        libPackNames = Sources.getResourcepackNames();
+
+        createDialog();
+    }
+
+
+    @Override
+    protected JComponent buildGui() {
+        final VBox vb = new VBox();
+        vb.windowPadding();
+
+        vb.heading("Import resource pack");
+
+        vb.titsep("File to import");
+        vb.gap();
+
+        //@formatter:off
+        filepicker = new FileInput(
+                this,
+                "Select file to import...",
+                FilePath.IMPORT_PACK,
+                "Import resource pack",
+                FileChooser.ZIP,
+                true
+        );
+        //@formatter:on
+
+        vb.add(filepicker);
+
+        vb.gapl();
+
+        field = Gui.textField("", "Pack name", "Name used in RPW");
+        field.addKeyListener(TextInputValidator.filenames());
+
+        vb.springForm(new String[]{"Name:"}, new JComponent[]{field});
+
+        vb.gapl();
+
+        buttonOk = new JButton("Import", Icons.MENU_YES);
+        buttonCancel = new JButton("Cancel", Icons.MENU_CANCEL);
+        vb.buttonRow(Gui.RIGHT, buttonOk, buttonCancel);
+
+        return vb;
+    }
+
+
+    @Override
+    protected void initGui() {
+        filepicker.setListener(new FilePickListener() {
+
+            @Override
+            public void onFileSelected(File file) {
+                try {
+                    final String[] parts = FileUtils.getFilenameParts(file);
+                    if (field.getText().trim().length() == 0) {
+                        field.setText(parts[0]);
+                    }
+
+                } catch (final Throwable t) {
+                }
+            }
+        });
+    }
+
+
+    @Override
+    protected void addActions() {
+        setEnterButton(buttonOk);
+        buttonOk.addActionListener(submitListener);
+        buttonCancel.addActionListener(closeListener);
+    }
+
+
+    @Override
+    public void onClose() {
+        Tasks.taskReloadSources(null);
+    }
+
     private final ActionListener submitListener = new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (! filepicker.hasFile()) {
+            if (!filepicker.hasFile()) {
                 Alerts.error(self(), "Missing file", "The selected file does not exist.");
                 return;
             }
@@ -78,7 +166,7 @@ public class DialogImportPack extends RpwDialog {
             };
 
             try {
-                if (! ZipUtils.entryExists(file, "pack.mcmeta")) {
+                if (!ZipUtils.entryExists(file, "pack.mcmeta")) {
                     Alerts.error(self(), "Invalid format", "Selected ZIP file isn't\na valid resource pack!");
                     return;
                 }
@@ -87,90 +175,11 @@ public class DialogImportPack extends RpwDialog {
                 closeDialog();
                 Alerts.info(App.getFrame(), "Resource pack \"" + name + "\" was imported.");
 
-            }
-            catch (final Exception exc) {
+            } catch (final Exception exc) {
                 Alerts.error(DialogImportPack.this, "Error while extracting the pack.");
                 FileUtils.delete(out, true); // cleanup
             }
 
         }
     };
-
-    public DialogImportPack() {
-        super(App.getFrame(), "Import");
-
-        libPackNames = Sources.getResourcepackNames();
-
-        createDialog();
-    }
-
-    @Override
-    protected JComponent buildGui() {
-        final VBox vb = new VBox();
-        vb.windowPadding();
-
-        vb.heading("Import resource pack");
-
-        vb.titsep("File to import");
-        vb.gap();
-
-        //@formatter:off
-        filepicker = new FileInput(
-                this,
-                "Select file to import...",
-                Config.FilePath.IMPORT_PACK,
-                "Import resource pack",
-                FileChooser.ZIP,
-                true
-        );
-        //@formatter:on
-
-        vb.add(filepicker);
-
-        vb.gapl();
-
-        field = Gui.textField("", "Pack name", "Name used in RPW");
-        field.addKeyListener(TextInputValidator.filenames());
-
-        vb.springForm(new String[]{"Name:"}, new JComponent[]{field});
-
-        vb.gapl();
-
-        buttonOk = new JButton("Import", Icons.MENU_YES);
-        buttonCancel = new JButton("Cancel", Icons.MENU_CANCEL);
-        vb.buttonRow(Gui.RIGHT, buttonOk, buttonCancel);
-
-        return vb;
-    }
-
-    @Override
-    protected void initGui() {
-        filepicker.setListener(new FileInput.FilePickListener() {
-
-            @Override
-            public void onFileSelected(File file) {
-                try {
-                    final String[] parts = FileUtils.getFilenameParts(file);
-                    if (field.getText().trim().length() == 0) {
-                        field.setText(parts[0]);
-                    }
-
-                }
-                catch (final Throwable t) {
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void addActions() {
-        setEnterButton(buttonOk);
-        buttonOk.addActionListener(submitListener);
-        buttonCancel.addActionListener(closeListener);
-    }
-
-    @Override
-    public void onClose() {
-        Tasks.taskReloadSources(null);
-    }
 }

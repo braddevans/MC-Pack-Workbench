@@ -31,8 +31,12 @@ package net.mightypork.rpw.utils;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
+
 
 /**
  * A 1.4 file that provides utility methods for creating form- or grid-style
@@ -52,32 +56,26 @@ public class SpringUtilities {
         System.out.println("maximumSize = " + c.getMaximumSize());
     }
 
+
     /**
      * Aligns the first <code>rows</code> * <code>cols</code> components of
      * <code>parent</code> in a grid. Each component is as big as the maximum
      * preferred width and height of the components. The parent is made just big
      * enough to fit them all.
      *
-     * @param rows
-     *         number of rows
-     * @param cols
-     *         number of columns
-     * @param initialX
-     *         x location to start the grid at
-     * @param initialY
-     *         y location to start the grid at
-     * @param xPad
-     *         x padding between cells
-     * @param yPad
-     *         y padding between cells
+     * @param rows     number of rows
+     * @param cols     number of columns
+     * @param initialX x location to start the grid at
+     * @param initialY y location to start the grid at
+     * @param xPad     x padding between cells
+     * @param yPad     y padding between cells
      */
     @SuppressWarnings("null")
     public static void makeGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
         SpringLayout layout;
         try {
             layout = (SpringLayout) parent.getLayout();
-        }
-        catch (final ClassCastException exc) {
+        } catch (final ClassCastException exc) {
             System.err.println("The first argument to makeGrid must use SpringLayout.");
             return;
         }
@@ -117,15 +115,13 @@ public class SpringUtilities {
             if (i % cols == 0) { // start of new row
                 lastRowCons = lastCons;
                 cons.setX(initialXSpring);
-            }
-            else { // x position depends on previous component
+            } else { // x position depends on previous component
                 cons.setX(Spring.sum(lastCons.getConstraint(SpringLayout.EAST), xPadSpring));
             }
 
             if (i / cols == 0) { // first row
                 cons.setY(initialYSpring);
-            }
-            else { // y position depends on previous row
+            } else { // y position depends on previous row
                 cons.setY(Spring.sum(lastRowCons.getConstraint(SpringLayout.SOUTH), yPadSpring));
             }
             lastCons = cons;
@@ -137,12 +133,14 @@ public class SpringUtilities {
         pCons.setConstraint(SpringLayout.EAST, Spring.sum(Spring.constant(xPad), lastCons.getConstraint(SpringLayout.EAST)));
     }
 
+
     /* Used by makeCompactGrid. */
     private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
         final SpringLayout layout = (SpringLayout) parent.getLayout();
         final Component c = parent.getComponent(row * cols + col);
         return layout.getConstraints(c);
     }
+
 
     /**
      * Aligns the first <code>rows</code> * <code>cols</code> components of
@@ -151,25 +149,18 @@ public class SpringUtilities {
      * similarly determined for each row. The parent is made just big enough to
      * fit them all.
      *
-     * @param rows
-     *         number of rows
-     * @param cols
-     *         number of columns
-     * @param initialX
-     *         x location to start the grid at
-     * @param initialY
-     *         y location to start the grid at
-     * @param xPad
-     *         x padding between cells
-     * @param yPad
-     *         y padding between cells
+     * @param rows     number of rows
+     * @param cols     number of columns
+     * @param initialX x location to start the grid at
+     * @param initialY y location to start the grid at
+     * @param xPad     x padding between cells
+     * @param yPad     y padding between cells
      */
     public static void makeCompactGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
         SpringLayout layout;
         try {
             layout = (SpringLayout) parent.getLayout();
-        }
-        catch (final ClassCastException exc) {
+        } catch (final ClassCastException exc) {
             System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
             return;
         }

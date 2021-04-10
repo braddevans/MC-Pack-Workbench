@@ -1,26 +1,30 @@
 package net.mightypork.rpw.gui.windows.messages;
 
+import java.awt.Component;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JOptionPane;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Alerts {
 
-    private static final Timer t = new Timer();
-    private static boolean loadingState;
-    private static boolean loadingStateDisplayed;
+    private static boolean loadingState = false;
+    private static boolean loadingStateDisplayed = false;
+    private static Timer t = new Timer();
+
 
     public static void error(Component c, String message) {
         error(c, "Error", message);
     }
 
+
     public static void error(Component c, String title, String message) {
-        if (c == null) { c = App.getFrame(); }
+        if (c == null) c = App.getFrame();
 
         Log.e(message);
 
@@ -35,9 +39,11 @@ public class Alerts {
         //@formatter:on
     }
 
+
     public static void warning(Component c, String message) {
         warning(c, "Warning", message);
     }
+
 
     public static void warning(Component c, String title, String message) {
         Log.w(message);
@@ -53,9 +59,11 @@ public class Alerts {
         //@formatter:on
     }
 
+
     public static void info(Component c, String message) {
         info(c, "Information", message);
     }
+
 
     public static void info(Component c, String title, String message) {
         Log.i(message);
@@ -71,12 +79,11 @@ public class Alerts {
         //@formatter:on
     }
 
+
     public static void loading(final boolean waiting) {
         loadingState = waiting;
 
-        if (loadingStateDisplayed == loadingState) {
-            return; // no change.
-        }
+        if (loadingStateDisplayed == loadingState) return; // no change.
 
         t.schedule(new TimerTask() {
 
@@ -87,6 +94,7 @@ public class Alerts {
         }, 60);
     }
 
+
     private static void updateLoadingVisuals() {
         if (loadingStateDisplayed == loadingState) {
             return; // nothing to change
@@ -96,6 +104,7 @@ public class Alerts {
 
         loadingStateDisplayed = loadingState;
     }
+
 
     public static boolean askYesNo(Component c, String title, String message) {
         //@formatter:off
@@ -110,6 +119,7 @@ public class Alerts {
         //@formatter:on
     }
 
+
     public static boolean askOkCancel(Component c, String title, String message) {
         //@formatter:off
         return JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
@@ -123,6 +133,7 @@ public class Alerts {
         //@formatter:on
     }
 
+
     public static int askYesNoCancel(Component c, String title, String message) {
         //@formatter:off
         return JOptionPane.showConfirmDialog(
@@ -135,6 +146,7 @@ public class Alerts {
         );
         //@formatter:on
     }
+
 
     public static String askForInput(Component c, String title, String message, String initial) {
         //@formatter:off

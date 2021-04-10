@@ -4,9 +4,11 @@ public class CharValidatorRegex implements CharValidator {
 
     private final String formula;
 
+
     public CharValidatorRegex(String regex) {
-        formula = regex;
+        this.formula = regex;
     }
+
 
     @Override
     public boolean isValid(char c) {

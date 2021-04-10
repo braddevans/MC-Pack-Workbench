@@ -1,13 +1,19 @@
 package net.mightypork.rpw;
 
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
 import net.mightypork.rpw.gui.widgets.MenuMain;
 import net.mightypork.rpw.gui.widgets.SidePanel;
 import net.mightypork.rpw.gui.widgets.TreeDisplay;
+import net.mightypork.rpw.gui.windows.WindowSplash;
 import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.gui.windows.WindowMain;
-import net.mightypork.rpw.gui.windows.WindowSplash;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.gui.windows.messages.DialogCrash;
 import net.mightypork.rpw.help.VersionUtils;
@@ -19,21 +25,20 @@ import net.mightypork.rpw.utils.HtmlBuilder;
 import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.logging.Log;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.jdesktop.swingx.JXFrame;
 
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileLock;
 
 public class App {
     public static App inst;
 
-    public static volatile RpwDialog activeDialog;
+    public volatile static RpwDialog activeDialog;
 
     public WindowMain window;
     public WindowSplash splashWindow;
     public JXFrame mainFrame; // always the active frame
+
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
@@ -41,8 +46,7 @@ public class App {
         // Fix the menubar "name" on OSX
         try {
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", Const.APP_NAME_SHORT);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             /* dontGiveAFuck() */
         }
 
@@ -50,105 +54,14 @@ public class App {
         inst.start();
     }
 
-    public static void die(String message) {
-        Alerts.error(null, "Fatal Error", message);
-        App.inst.deinit();
-        System.exit(1);
-    }
-
-    private static boolean lockInstance() {
-        final File lockFile = OsUtils.getAppDir(".lock");
-
-        try {
-            final RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
-            final FileLock fileLock = randomAccessFile.getChannel().tryLock();
-            if (fileLock != null) {
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    try {
-                        fileLock.release();
-                        randomAccessFile.close();
-                        lockFile.delete();
-                    }
-                    catch (final Exception e) {
-                        System.out.println("Unable to remove lock file.");
-                        e.printStackTrace();
-                    }
-                }));
-                return true;
-            }
-        }
-        catch (final Exception e) {
-            System.out.println("Unable to create lock file.");
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * Show crash report dialog with error stack trace.
-     *
-     * @param error
-     */
-    public static void onCrash(final Throwable error) {
-        final RpwDialog dialog = new DialogCrash(error);
-        dialog.setVisible(true);
-    }
-
-    public static SidePanel getSidePanel() {
-        if (inst == null || inst.window == null) { return null; }
-
-        return inst.window.sidePanel;
-    }
-
-    public static TreeDisplay getTreeDisplay() {
-        if (inst == null || inst.window == null) { return null; }
-
-        return inst.window.treeDisplay;
-    }
-
-    public static JXFrame getFrame() {
-        if (inst == null || inst.mainFrame == null) { return null; }
-        return inst.mainFrame;
-    }
-
-    public static MenuMain getMenu() {
-        if (inst == null || inst.window == null) { return null; }
-
-        return inst.window.menu;
-    }
-
-    public static void setWaiting(boolean state) {
-        if (inst == null || inst.window == null) { return; }
-
-        inst.window.setWaiting(state);
-    }
-
-    public static String getWindowTitle() {
-        String wt = "";
-        if (Projects.isOpen()) { wt += Projects.getActive().getName() + "  \u2022  "; }
-        wt += Const.APP_NAME + " v" + Const.VERSION;
-        return wt;
-    }
-
-    public static void setTitle(String windowTitle) {
-        if (inst == null || inst.window == null) { return; }
-
-        inst.window.frame.setTitle(windowTitle);
-    }
-
-    /** Set status text */
-    public static void setStatus(String s) {
-        if (inst == null || inst.window == null) { return; }
-
-        inst.window.setStatus(s);
-    }
 
     public void start() {
         init();
     }
 
+
     public void init() {
-        if (! lockInstance()) {
+        if (!lockInstance()) {
             Alerts.error(
                     null,
                     "Couldn't lock workdir",
@@ -176,16 +89,14 @@ public class App {
             System.setProperty("awt.useSystemAAFontSettings", "on");
             System.setProperty("swing.aatext", "true");
             System.setProperty("sun.java2d.xrender", "true");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(e);
         }
 
         // attempt to enable NIMBUS / NATIVE
         if (Config.USE_NIMBUS) {
             Gui.useNimbusLaF();
-        }
-        else if (Config.USE_NATIVE_THEME) {
+        } else if (Config.USE_NATIVE_THEME) {
             Gui.useNativeLaF();
         }
 
@@ -227,13 +138,119 @@ public class App {
         Tasks.taskShowChangelog();
     }
 
+
     public void deinit() {
         try {
             splashWindow.frame.dispose();
             window.frame.dispose();
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             Log.e(t);
         }
+    }
+
+
+    public static void die(String message) {
+        Alerts.error(null, "Fatal Error", message);
+        App.inst.deinit();
+        System.exit(1);
+    }
+
+
+    private static boolean lockInstance() {
+        final File lockFile = OsUtils.getAppDir(".lock");
+
+        try {
+            final RandomAccessFile randomAccessFile = new RandomAccessFile(lockFile, "rw");
+            final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+            if (fileLock != null) {
+                Runtime.getRuntime().addShutdownHook(new Thread() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            fileLock.release();
+                            randomAccessFile.close();
+                            lockFile.delete();
+                        } catch (final Exception e) {
+                            System.out.println("Unable to remove lock file.");
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                return true;
+            }
+        } catch (final Exception e) {
+            System.out.println("Unable to create lock file.");
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    /**
+     * Show crash report dialog with error stack trace.
+     *
+     * @param error
+     */
+    public static void onCrash(final Throwable error) {
+        final RpwDialog dialog = new DialogCrash(error);
+        dialog.setVisible(true);
+    }
+
+
+    public static SidePanel getSidePanel() {
+        if (inst == null || inst.window == null) return null;
+
+        return inst.window.sidePanel;
+    }
+
+
+    public static TreeDisplay getTreeDisplay() {
+        if (inst == null || inst.window == null) return null;
+
+        return inst.window.treeDisplay;
+    }
+
+
+    public static JXFrame getFrame() {
+        if (inst == null || inst.mainFrame == null) return null;
+        return inst.mainFrame;
+    }
+
+
+    public static MenuMain getMenu() {
+        if (inst == null || inst.window == null) return null;
+
+        return inst.window.menu;
+    }
+
+
+    public static void setWaiting(boolean state) {
+        if (inst == null || inst.window == null) return;
+
+        inst.window.setWaiting(state);
+    }
+
+
+    public static String getWindowTitle() {
+        String wt = "";
+        if (Projects.isOpen()) wt += Projects.getActive().getName() + "  \u2022  ";
+        wt += Const.APP_NAME + " v" + Const.VERSION;
+        return wt;
+    }
+
+
+    public static void setTitle(String windowTitle) {
+        if (inst == null || inst.window == null) return;
+
+        inst.window.frame.setTitle(windowTitle);
+    }
+
+
+    /** Set status text */
+    public static void setStatus(String s) {
+        if (inst == null || inst.window == null) return;
+
+        inst.window.setStatus(s);
     }
 }

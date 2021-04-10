@@ -1,15 +1,19 @@
 package net.mightypork.rpw.struct;
 
+import java.lang.Character.Subset;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class SoundEntry {
 
     public String category;
     public ArrayList<SoundSubEntry> sounds;
 
+
     public SoundEntry() {
     }
+
 
     public SoundEntry(String ctg, List<SoundSubEntry> files) {
         category = ctg;
@@ -20,6 +24,7 @@ public class SoundEntry {
         }
         sounds.addAll(files);
     }
+
 
     @Override
     public String toString() {

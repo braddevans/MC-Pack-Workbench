@@ -1,5 +1,15 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.gui.Gui;
@@ -15,13 +25,6 @@ import net.mightypork.rpw.utils.Utils;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.List;
 
 public class DialogManageLibrary extends RpwDialog {
 
@@ -35,109 +38,12 @@ public class DialogManageLibrary extends RpwDialog {
     private JButton buttonImport;
 
     private boolean changedAnything;
-    private final ActionListener renameListener = new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final String oldName = list.getSelectedValue(); // just 1
 
-            if (oldName == null) {
-                return;
-            }
+    private void reloadOptions() {
+        list.setItems(packNames = Sources.getResourcepackNames());
+    }
 
-            // OK name
-
-            //@formatter:off
-            final String newName = Alerts.askForInput(
-                    DialogManageLibrary.this,
-                    "Rename Library Source",
-                    "Please, enter a new name for the\n" +
-                    "resource pack \"" + oldName + "\".\n" +
-                    "\n" +
-                    "Do not use /, *, ?, =.",
-                    oldName
-            );
-            //@formatter:on
-
-            if (newName == null) { return; }
-            newName.trim();
-            if (! Utils.isValidFilenameString(newName)) {
-                Alerts.error(DialogManageLibrary.this, "\"" + newName + "\" is not a valid name.");
-                return;
-            }
-
-            if (oldName.equals(newName)) { return; }
-
-            if (packNames.contains(newName)) {
-                Alerts.error(DialogManageLibrary.this, "Name \"" + newName + "\" is already used.");
-                return;
-            }
-
-            final File oldDir = new File(OsUtils.getAppDir(Paths.DIR_RESOURCEPACKS), oldName);
-            final File newDir = new File(OsUtils.getAppDir(Paths.DIR_RESOURCEPACKS), newName);
-
-            if (! oldDir.renameTo(newDir)) {
-                Alerts.error(DialogManageLibrary.this, "Failed to move the pack.");
-                FileUtils.delete(newDir, true); // cleanup
-            }
-
-            Tasks.taskTreeSourceRename(oldName, newName);
-
-            changedAnything = true;
-            reloadOptions();
-        }
-    };
-    private final ActionListener deleteListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final List<String> choice = list.getSelectedValues();
-
-            if (choice == null) {
-                return;
-            }
-
-            // OK name
-
-            final String trailS = (choice.size() > 1 ? "s" : "");
-
-            //@formatter:off
-            final boolean yes = Alerts.askYesNo(
-                    DialogManageLibrary.this,
-                    "Deleting Library Source" + trailS,
-                    "Do you really want to delete the\n" +
-                    "selected resource pack" + trailS + "?"
-            );
-            //@formatter:on
-
-            if (! yes) { return; }
-
-            for (final String s : choice) {
-                Tasks.taskDeleteResourcepack(s);
-            }
-
-            changedAnything = true;
-            reloadOptions();
-        }
-    };
-    private final ActionListener importListener = new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final RpwDialog importDialog = new DialogImportPack();
-            importDialog.addCloseHook(new Runnable() {
-
-                @Override
-                public void run() {
-                    changedAnything = true;
-                    reloadOptions();
-                }
-            });
-
-            importDialog.setVisible(true);
-
-        }
-    };
 
     public DialogManageLibrary() {
         super(App.getFrame(), "Manage Library");
@@ -147,9 +53,6 @@ public class DialogManageLibrary extends RpwDialog {
         createDialog();
     }
 
-    private void reloadOptions() {
-        list.setItems(packNames = Sources.getResourcepackNames());
-    }
 
     @Override
     protected JComponent buildGui() {
@@ -196,10 +99,12 @@ public class DialogManageLibrary extends RpwDialog {
         return vbox;
     }
 
+
     @Override
     public void onClose() {
-        if (changedAnything) { Tasks.taskReloadSources(null); }
+        if (changedAnything) Tasks.taskReloadSources(null);
     }
+
 
     @Override
     protected void addActions() {
@@ -209,4 +114,110 @@ public class DialogManageLibrary extends RpwDialog {
         buttonRename.addActionListener(renameListener);
         buttonImport.addActionListener(importListener);
     }
+
+    private final ActionListener renameListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String oldName = list.getSelectedValue(); // just 1
+
+            if (oldName == null) {
+                return;
+            }
+
+            // OK name
+
+            //@formatter:off
+            final String newName = Alerts.askForInput(
+                    DialogManageLibrary.this,
+                    "Rename Library Source",
+                    "Please, enter a new name for the\n" +
+                            "resource pack \"" + oldName + "\".\n" +
+                            "\n" +
+                            "Do not use /, *, ?, =.",
+                    oldName
+            );
+            //@formatter:on
+
+            if (newName == null) return;
+            newName.trim();
+            if (!Utils.isValidFilenameString(newName)) {
+                Alerts.error(DialogManageLibrary.this, "\"" + newName + "\" is not a valid name.");
+                return;
+            }
+
+            if (oldName.equals(newName)) return;
+
+            if (packNames.contains(newName)) {
+                Alerts.error(DialogManageLibrary.this, "Name \"" + newName + "\" is already used.");
+                return;
+            }
+
+            final File oldDir = new File(OsUtils.getAppDir(Paths.DIR_RESOURCEPACKS), oldName);
+            final File newDir = new File(OsUtils.getAppDir(Paths.DIR_RESOURCEPACKS), newName);
+
+            if (!oldDir.renameTo(newDir)) {
+                Alerts.error(DialogManageLibrary.this, "Failed to move the pack.");
+                FileUtils.delete(newDir, true); // cleanup
+            }
+
+            Tasks.taskTreeSourceRename(oldName, newName);
+
+            changedAnything = true;
+            reloadOptions();
+        }
+    };
+
+    private final ActionListener deleteListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final List<String> choice = list.getSelectedValues();
+
+            if (choice == null) {
+                return;
+            }
+
+            // OK name
+
+            final String trailS = (choice.size() > 1 ? "s" : "");
+
+            //@formatter:off
+            final boolean yes = Alerts.askYesNo(
+                    DialogManageLibrary.this,
+                    "Deleting Library Source" + trailS,
+                    "Do you really want to delete the\n" +
+                            "selected resource pack" + trailS + "?"
+            );
+            //@formatter:on
+
+            if (!yes) return;
+
+            for (final String s : choice) {
+                Tasks.taskDeleteResourcepack(s);
+            }
+
+            changedAnything = true;
+            reloadOptions();
+        }
+    };
+
+    private final ActionListener importListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final RpwDialog importDialog = new DialogImportPack();
+            importDialog.addCloseHook(new Runnable() {
+
+                @Override
+                public void run() {
+                    changedAnything = true;
+                    reloadOptions();
+                }
+            });
+
+            importDialog.setVisible(true);
+
+        }
+    };
 }

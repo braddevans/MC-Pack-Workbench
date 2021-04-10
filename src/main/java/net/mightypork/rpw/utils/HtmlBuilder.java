@@ -1,20 +1,25 @@
 package net.mightypork.rpw.utils;
 
-import com.github.rjeschke.txtmark.Configuration;
-import com.github.rjeschke.txtmark.Processor;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.utils.files.FileUtils;
+
 import org.markdown4j.CodeBlockEmitter;
 import org.markdown4j.ExtDecorator;
 
+import com.github.rjeschke.txtmark.Configuration;
+import com.github.rjeschke.txtmark.Configuration.Builder;
+import com.github.rjeschke.txtmark.Processor;
+
+
 public class HtmlBuilder {
 
-    static Configuration.Builder mdBuilder;
+    static Builder mdBuilder;
 
     static String htmlBaseTop;
     static String htmlHelpTop;
     static String htmlChangelogTop;
     static String htmlBottom;
+
 
     public static void init() {
         mdBuilder = Configuration.builder();
@@ -28,17 +33,21 @@ public class HtmlBuilder {
         htmlBottom = FileUtils.resourceToString(Paths.DATA_DIR_HTML + "html_bottom.html");
     }
 
+
     public static String markdownToHtmlBase(String markdown) {
         return markdownToHtml(markdown, htmlBaseTop);
     }
+
 
     public static String markdownToHtmlHelp(String markdown) {
         return markdownToHtml(markdown, htmlHelpTop);
     }
 
+
     public static String markdownToHtmlChangelog(String markdown) {
         return markdownToHtml(markdown, htmlChangelogTop);
     }
+
 
     public static String markdownToHtml(String markdown, String top) {
         final String md = Processor.process(markdown, mdBuilder.build());

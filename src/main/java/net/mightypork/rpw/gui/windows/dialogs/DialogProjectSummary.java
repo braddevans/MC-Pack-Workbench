@@ -1,5 +1,18 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -10,23 +23,21 @@ import net.mightypork.rpw.project.Projects;
 import net.mightypork.rpw.tree.assets.TreeBuilder;
 import net.mightypork.rpw.tree.assets.processors.GetProjectSummaryProcessor;
 import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
+
 import org.jdesktop.swingx.JXTable;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class DialogProjectSummary extends RpwDialog {
 
     private JButton btnClose;
+
 
     public DialogProjectSummary() {
         super(App.getFrame(), "Project summary");
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -63,9 +74,11 @@ public class DialogProjectSummary extends RpwDialog {
         return vbox;
     }
 
+
     private Object[] getColumns() {
         return new String[]{"Asset key", "Source"};
     }
+
 
     private Object[][] getData() {
         final GetProjectSummaryProcessor proc = new GetProjectSummaryProcessor();
@@ -77,7 +90,7 @@ public class DialogProjectSummary extends RpwDialog {
 
         final List<Object[]> rows = new ArrayList<Object[]>();
 
-        for (final Map.Entry<String, String> e : summary.entrySet()) {
+        for (final Entry<String, String> e : summary.entrySet()) {
             rows.add(new Object[]{e.getKey(), Sources.processForDisplay(e.getValue())});
         }
 
@@ -91,6 +104,7 @@ public class DialogProjectSummary extends RpwDialog {
 
         return data;
     }
+
 
     @Override
     protected void addActions() {

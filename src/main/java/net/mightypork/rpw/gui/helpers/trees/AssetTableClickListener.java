@@ -1,28 +1,32 @@
 package net.mightypork.rpw.gui.helpers.trees;
 
-import net.mightypork.rpw.gui.helpers.PopupTriggerListener;
-import net.mightypork.rpw.gui.windows.popups.PopupSelectedNodes;
-import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
-import net.mightypork.rpw.utils.logging.Log;
-import org.jdesktop.swingx.JXTreeTable;
-
-import javax.swing.tree.TreePath;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssetTableClickListener extends PopupTriggerListener {
+import javax.swing.tree.TreePath;
 
-    JXTreeTable treeTable;
+import net.mightypork.rpw.gui.helpers.PopupTriggerListener;
+import net.mightypork.rpw.gui.windows.popups.PopupSelectedNodes;
+import net.mightypork.rpw.tree.assets.tree.AssetTreeNode;
+import net.mightypork.rpw.utils.logging.Log;
+
+import org.jdesktop.swingx.JXTreeTable;
+
+
+public class AssetTableClickListener extends PopupTriggerListener {
 
     public AssetTableClickListener(JXTreeTable treeTable) {
         this.treeTable = treeTable;
     }
 
+    JXTreeTable treeTable;
+
+
     @Override
     public void onPopupTrigger(MouseEvent e) {
         final TreePath pathUnderMouse = treeTable.getPathForLocation(e.getX(), e.getY());
-        if (pathUnderMouse == null) { return; }
+        if (pathUnderMouse == null) return;
 
         TreePath[] paths = treeTable.getTreeSelectionModel().getSelectionPaths();
 
@@ -37,7 +41,7 @@ public class AssetTableClickListener extends PopupTriggerListener {
             }
         }
 
-        if (! clickedOnSelected) {
+        if (!clickedOnSelected) {
             treeTable.getTreeSelectionModel().setSelectionPath(pathUnderMouse);
             paths = new TreePath[]{pathUnderMouse};
         }

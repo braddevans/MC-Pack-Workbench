@@ -1,11 +1,12 @@
 package net.mightypork.rpw.tree.assets.groups;
 
-import net.mightypork.rpw.library.Sources;
-import net.mightypork.rpw.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import net.mightypork.rpw.library.Sources;
+import net.mightypork.rpw.utils.Utils;
+
 
 public class AssetGrouperRaw extends AssetGrouper {
 
@@ -54,8 +55,8 @@ public class AssetGrouperRaw extends AssetGrouper {
             for (final GroupInfo g : groups) {
                 final String parent = g.getParent();
 
-                if (parent == null) { continue; }
-                if (! createdGroups.contains(parent)) {
+                if (parent == null) continue;
+                if (!createdGroups.contains(parent)) {
                     final GroupInfo parentGroup = new GroupInfo(parent, Utils.fromLastDot(parent));
                     toAdd.add(parentGroup);
                     // if (Config.LOG_GROUPS) Log.f3("Group: " + parentGroup);
@@ -64,8 +65,7 @@ public class AssetGrouperRaw extends AssetGrouper {
                 }
             }
             groups.addAll(toAdd);
-        }
-        while (toAdd.size() > 0);
+        } while (toAdd.size() > 0);
 
         Collections.sort(groups, new DotComparator<GroupInfo>());
 

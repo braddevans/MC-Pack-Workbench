@@ -5,12 +5,61 @@ import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.files.PropertyManager;
 import net.mightypork.rpw.utils.logging.Log;
 
+
 /**
  * Main Config class
  *
  * @author Ondřej Hruška (MightyPork)
  */
 public class Config {
+    public enum FilePath {
+        IMPORT_FILE, IMPORT_SOUND, IMPORT_PACK, EXPORT, DEFAULT;
+
+        public String getPath() {
+            switch (this) {
+                case IMPORT_FILE:
+                    return Config.FILECHOOSER_PATH_IMPORT_FILE;
+
+                case IMPORT_SOUND:
+                    return Config.FILECHOOSER_PATH_IMPORT_SOUND;
+
+                case IMPORT_PACK:
+                    return Config.FILECHOOSER_PATH_IMPORT_PACK;
+
+                case EXPORT:
+                    return Config.FILECHOOSER_PATH_EXPORT;
+
+                default:
+                    return System.getProperty("user.home");
+            }
+        }
+
+
+        public void savePath(String path) {
+            switch (this) {
+                case IMPORT_FILE:
+                    Config.FILECHOOSER_PATH_IMPORT_FILE = path;
+                    break;
+
+                case IMPORT_SOUND:
+                    Config.FILECHOOSER_PATH_IMPORT_SOUND = path;
+                    break;
+
+                case IMPORT_PACK:
+                    Config.FILECHOOSER_PATH_IMPORT_PACK = path;
+                    break;
+
+                case EXPORT:
+                    Config.FILECHOOSER_PATH_EXPORT = path;
+                    break;
+                default:
+                    // can't do anything
+            }
+
+            Config.save();
+        }
+    }
+
     // opts
     public static final boolean def_FANCY_GROUPS = true;
     public static final boolean def_SHOW_FONT = true;
@@ -32,69 +81,6 @@ public class Config {
     public static final boolean def_WARNING_ORPHANED_NODES = true;
     public static final boolean def_USE_NIMBUS = true;
     public static final boolean def_USE_NATIVE_THEME = false;
-    // filechooser paths
-    public static final String def_FILECHOOSER_PATH_IMPORT_FILE = System.getProperty("user.home");
-    public static final String def_FILECHOOSER_PATH_IMPORT_SOUND = System.getProperty("user.home");
-    public static final String def_FILECHOOSER_PATH_IMPORT_PACK = System.getProperty("user.home");
-    public static final String def_FILECHOOSER_PATH_EXPORT = System.getProperty("user.home");
-    // editors
-    public static final boolean def_USE_IMAGE_EDITOR = true;
-    public static final String def_IMAGE_EDITOR = "/usr/bin/gimp";
-    public static final String def_IMAGE_EDITOR_ARGS = "%s";
-    public static final boolean def_USE_TEXT_EDITOR = true;
-    public static final String def_TEXT_EDITOR = "/usr/bin/kwrite";
-    public static final String def_TEXT_EDITOR_ARGS = "%s";
-    public static final boolean def_USE_AUDIO_EDITOR = true;
-    public static final String def_AUDIO_EDITOR = "/usr/bin/audacity";
-    public static final String def_AUDIO_EDITOR_ARGS = "%s";
-    public static final boolean def_USE_MODEL_EDITOR = true;
-    public static final String def_MODEL_EDITOR = "/usr/bin/blockbench";
-    public static final String def_MODEL_EDITOR_ARGS = "%s";
-    public static final String PK_FILECHOOSER_PATH_IMPORT_FILE = "status.path.importFile";
-    public static final String PK_FILECHOOSER_PATH_IMPORT_SOUND = "status.path.importCustomSound";
-    public static final String PK_FILECHOOSER_PATH_IMPORT_PACK = "status.path.importPack";
-    public static final String PK_FILECHOOSER_PATH_EXPORT = "status.path.exportPack";
-    public static final boolean LOGGING_ENABLED = true;
-    public static final boolean LOG_TO_STDOUT = true;
-    public static final boolean LOG_FILTERS = false;
-    public static final boolean LOG_GROUPS = false;
-    public static final boolean LOG_FILTERS_DETAILED = false;
-    public static final boolean LOG_VANILLA_LOAD_STRUCTURE = false;
-    public static final boolean LOG_HELP_LOADING = false;
-    public static final boolean LOG_EXPORT_FILES = true;
-    public static final boolean LOG_EXTRACTED_ASSETS = true;
-    private static final String PK_FANCY_GROUPS = "display.fancyTree";
-    private static final String PK_SHOW_FONT = "assets.showFont";
-    private static final String PK_SHOW_LANG = "assets.showLang";
-    private static final String PK_SHOW_SOUNDS = "assets.showSounds";
-    private static final String PK_SHOW_TECHNICAL = "assets.showTechnical";
-    private static final String PK_SHOW_TEXTS = "assets.showText";
-    private static final String PK_SHOW_TEXTURES = "assets.showTextures";
-    private static final String PK_SHOW_OBSOLETE_DIRS = "assets.showObsoleteDirs";
-    private static final String PK_PREVIEW_HOVER = "display.previewOnHover";
-    private static final String PK_SHOW_HIDDEN_IN_FILEPICKER = "system.showHiddenFiles";
-    private static final String PK_USE_INTERNAL_META_EDITOR = "system.editor.useInternalMetaEditor";
-    private static final String PK_USE_INTERNAL_TEXT_EDITOR = "system.editor.useInternalTextEditor";
-    private static final String PK_WARNING_ORPHANED_NODES = "display.warning.orphanedNodes";
-    private static final String PK_IMAGE_EDITOR = "system.editor.image.command";
-    private static final String PK_IMAGE_EDITOR_ARGS = "system.editor.image.args";
-    private static final String PK_USE_IMAGE_EDITOR = "system.editor.image.enabled";
-    private static final String PK_TEXT_EDITOR = "system.editor.text.command";
-    private static final String PK_TEXT_EDITOR_ARGS = "system.editor.text.args";
-    private static final String PK_USE_TEXT_EDITOR = "system.editor.text.enabled";
-    private static final String PK_USE_NIMBUS = "display.nimbusTheme";
-    private static final String PK_USE_NATIVE_THEME = "display.nativeTheme";
-    private static final String PK_AUTO_SAVE = "system.autoSave";
-    private static final String PK_AUDIO_EDITOR = "system.editor.audio.command";
-    private static final String PK_AUDIO_EDITOR_ARGS = "system.editor.audio.command.args";
-    private static final String PK_USE_AUDIO_EDITOR = "system.editor.audio.enabled";
-    private static final String PK_MODEL_EDITOR = "system.editor.model.command";
-    private static final String PK_MODEL_EDITOR_ARGS = "system.editor.model.command.args";
-    private static final String PK_USE_MODEL_EDITOR = "system.editor.model.enabled";
-    private static final String PK_CLOSED_WITH_PROJECT_OPEN = "status.closedWithProjectOpen";
-    private static final String PK_LAST_RUN_VERSION = "status.lastRunVersion";
-    private static final String PK_LIBRARY_VERSION = "status.libraryVersion";
-    private static final String PK_CHOICE_EXPORT_TO_MC = "status.exportToMcChoice";
     public static boolean FANCY_TREE;
     public static boolean SHOW_FONT;
     public static boolean SHOW_SOUNDS;
@@ -115,25 +101,92 @@ public class Config {
     public static String LIBRARY_VERSION;
     public static boolean USE_NIMBUS;
     public static boolean USE_NATIVE_THEME;
-    public static boolean USE_IMAGE_EDITOR = true;
-    public static String IMAGE_EDITOR;
-    public static String IMAGE_EDITOR_ARGS;
-    public static boolean USE_TEXT_EDITOR = true;
-    public static String TEXT_EDITOR;
-    public static String TEXT_EDITOR_ARGS;
-    public static boolean USE_AUDIO_EDITOR = true;
-    public static String AUDIO_EDITOR;
-    public static String AUDIO_EDITOR_ARGS;
-    public static boolean USE_MODEL_EDITOR = true;
-    public static String MODEL_EDITOR;
-    public static String MODEL_EDITOR_ARGS;
 
-    // options that can't be configured via config file
+    // filechooser paths
+    public static final String def_FILECHOOSER_PATH_IMPORT_FILE = System.getProperty("user.home");
+    public static final String def_FILECHOOSER_PATH_IMPORT_SOUND = System.getProperty("user.home");
+    public static final String def_FILECHOOSER_PATH_IMPORT_PACK = System.getProperty("user.home");
+    public static final String def_FILECHOOSER_PATH_EXPORT = System.getProperty("user.home");
+
     private static String FILECHOOSER_PATH_IMPORT_FILE;
     private static String FILECHOOSER_PATH_IMPORT_SOUND;
     private static String FILECHOOSER_PATH_IMPORT_PACK;
     private static String FILECHOOSER_PATH_EXPORT;
+
+    // editors
+    public static final boolean def_USE_IMAGE_EDITOR = true;
+    public static final String def_IMAGE_EDITOR = "/usr/bin/gimp";
+    public static final String def_IMAGE_EDITOR_ARGS = "%s";
+    public static boolean USE_IMAGE_EDITOR = true;
+    public static String IMAGE_EDITOR;
+    public static String IMAGE_EDITOR_ARGS;
+
+    public static final boolean def_USE_TEXT_EDITOR = true;
+    public static final String def_TEXT_EDITOR = "/usr/bin/kwrite";
+    public static final String def_TEXT_EDITOR_ARGS = "%s";
+    public static boolean USE_TEXT_EDITOR = true;
+    public static String TEXT_EDITOR;
+    public static String TEXT_EDITOR_ARGS;
+
+    public static final boolean def_USE_AUDIO_EDITOR = true;
+    public static final String def_AUDIO_EDITOR = "/usr/bin/audacity";
+    public static final String def_AUDIO_EDITOR_ARGS = "%s";
+    public static boolean USE_AUDIO_EDITOR = true;
+    public static String AUDIO_EDITOR;
+    public static String AUDIO_EDITOR_ARGS;
+
+    public static final boolean def_USE_MODEL_EDITOR = true;
+    public static final String def_MODEL_EDITOR = "/usr/bin/blockbench";
+    public static final String def_MODEL_EDITOR_ARGS = "%s";
+    public static boolean USE_MODEL_EDITOR = true;
+    public static String MODEL_EDITOR;
+    public static String MODEL_EDITOR_ARGS;
+
     private static PropertyManager mgr;
+
+    private static final String PK_FANCY_GROUPS = "display.fancyTree";
+    private static final String PK_SHOW_FONT = "assets.showFont";
+    private static final String PK_SHOW_LANG = "assets.showLang";
+    private static final String PK_SHOW_SOUNDS = "assets.showSounds";
+    private static final String PK_SHOW_TECHNICAL = "assets.showTechnical";
+    private static final String PK_SHOW_TEXTS = "assets.showText";
+    private static final String PK_SHOW_TEXTURES = "assets.showTextures";
+    private static final String PK_SHOW_OBSOLETE_DIRS = "assets.showObsoleteDirs";
+    private static final String PK_PREVIEW_HOVER = "display.previewOnHover";
+    private static final String PK_SHOW_HIDDEN_IN_FILEPICKER = "system.showHiddenFiles";
+    private static final String PK_USE_INTERNAL_META_EDITOR = "system.editor.useInternalMetaEditor";
+    private static final String PK_USE_INTERNAL_TEXT_EDITOR = "system.editor.useInternalTextEditor";
+    private static final String PK_WARNING_ORPHANED_NODES = "display.warning.orphanedNodes";
+
+    private static final String PK_IMAGE_EDITOR = "system.editor.image.command";
+    private static final String PK_IMAGE_EDITOR_ARGS = "system.editor.image.args";
+    private static final String PK_USE_IMAGE_EDITOR = "system.editor.image.enabled";
+
+    private static final String PK_TEXT_EDITOR = "system.editor.text.command";
+    private static final String PK_TEXT_EDITOR_ARGS = "system.editor.text.args";
+    private static final String PK_USE_TEXT_EDITOR = "system.editor.text.enabled";
+
+    private static final String PK_USE_NIMBUS = "display.nimbusTheme";
+    private static final String PK_USE_NATIVE_THEME = "display.nativeTheme";
+    private static final String PK_AUTO_SAVE = "system.autoSave";
+
+    private static final String PK_AUDIO_EDITOR = "system.editor.audio.command";
+    private static final String PK_AUDIO_EDITOR_ARGS = "system.editor.audio.command.args";
+    private static final String PK_USE_AUDIO_EDITOR = "system.editor.audio.enabled";
+
+    private static final String PK_MODEL_EDITOR = "system.editor.model.command";
+    private static final String PK_MODEL_EDITOR_ARGS = "system.editor.model.command.args";
+    private static final String PK_USE_MODEL_EDITOR = "system.editor.model.enabled";
+
+    public static final String PK_FILECHOOSER_PATH_IMPORT_FILE = "status.path.importFile";
+    public static final String PK_FILECHOOSER_PATH_IMPORT_SOUND = "status.path.importCustomSound";
+    public static final String PK_FILECHOOSER_PATH_IMPORT_PACK = "status.path.importPack";
+    public static final String PK_FILECHOOSER_PATH_EXPORT = "status.path.exportPack";
+    private static final String PK_CLOSED_WITH_PROJECT_OPEN = "status.closedWithProjectOpen";
+    private static final String PK_LAST_RUN_VERSION = "status.lastRunVersion";
+    private static final String PK_LIBRARY_VERSION = "status.libraryVersion";
+    private static final String PK_CHOICE_EXPORT_TO_MC = "status.exportToMcChoice";
+
 
     /**
      * Prepare config manager and load user settings
@@ -144,8 +197,8 @@ public class Config {
         //@formatter:off
         final String comment =
                 Const.APP_NAME + " config file\n\n" +
-                "RPW *must* be closed while you modify the settings,\n" +
-                "otherwise they will be overwritten.";
+                        "RPW *must* be closed while you modify the settings,\n" +
+                        "otherwise they will be overwritten.";
         //@formatter:on
 
         mgr = new PropertyManager(OsUtils.getAppDir(Paths.FILE_CONFIG), comment);
@@ -203,6 +256,7 @@ public class Config {
         load(); // load what has been "put"
     }
 
+
     /**
      * Save changed fields to config file
      */
@@ -259,6 +313,7 @@ public class Config {
         }
     }
 
+
     /**
      * Load config file and assign values to fields
      */
@@ -311,50 +366,21 @@ public class Config {
         CHOICE_EXPORT_TO_MC = mgr.getInteger(PK_CHOICE_EXPORT_TO_MC);
     }
 
-    public enum FilePath {
-        IMPORT_FILE, IMPORT_SOUND, IMPORT_PACK, EXPORT, DEFAULT;
+    // options that can't be configured via config file
 
-        public String getPath() {
-            switch (this) {
-                case IMPORT_FILE:
-                    return Config.FILECHOOSER_PATH_IMPORT_FILE;
+    public static final boolean LOGGING_ENABLED = true;
 
-                case IMPORT_SOUND:
-                    return Config.FILECHOOSER_PATH_IMPORT_SOUND;
+    public static final boolean LOG_TO_STDOUT = true;
 
-                case IMPORT_PACK:
-                    return Config.FILECHOOSER_PATH_IMPORT_PACK;
+    public static final boolean LOG_FILTERS = false;
+    public static final boolean LOG_GROUPS = false;
 
-                case EXPORT:
-                    return Config.FILECHOOSER_PATH_EXPORT;
+    public static final boolean LOG_FILTERS_DETAILED = false;
+    public static final boolean LOG_VANILLA_LOAD_STRUCTURE = false;
 
-                default:
-                    return System.getProperty("user.home");
-            }
-        }
+    public static final boolean LOG_HELP_LOADING = false;
 
-        public void savePath(String path) {
-            switch (this) {
-                case IMPORT_FILE:
-                    Config.FILECHOOSER_PATH_IMPORT_FILE = path;
-                    break;
+    public static final boolean LOG_EXPORT_FILES = true;
 
-                case IMPORT_SOUND:
-                    Config.FILECHOOSER_PATH_IMPORT_SOUND = path;
-                    break;
-
-                case IMPORT_PACK:
-                    Config.FILECHOOSER_PATH_IMPORT_PACK = path;
-                    break;
-
-                case EXPORT:
-                    Config.FILECHOOSER_PATH_EXPORT = path;
-                    break;
-                default:
-                    // can't do anything
-            }
-
-            Config.save();
-        }
-    }
+    public static final boolean LOG_EXTRACTED_ASSETS = true;
 }

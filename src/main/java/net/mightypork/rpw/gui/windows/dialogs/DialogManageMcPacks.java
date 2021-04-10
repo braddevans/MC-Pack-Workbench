@@ -1,5 +1,18 @@
 package net.mightypork.rpw.gui.windows.dialogs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.gui.Gui;
 import net.mightypork.rpw.gui.Icons;
@@ -12,72 +25,23 @@ import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class DialogManageMcPacks extends RpwDialog {
 
     private List<String> mcPacks;
 
     private SimpleStringList list;
-    private final ActionListener deleteListener = new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final List<String> choice = list.getSelectedValues();
-
-            if (choice == null) {
-                return;
-            }
-
-            // OK name
-
-            final String trailS = (choice.size() > 1 ? "s" : "");
-
-            //@formatter:off
-            final boolean yes = Alerts.askYesNo(
-                    DialogManageMcPacks.this,
-                    "Deleting Installed Pack" + trailS,
-                    "Do you really want to delete the selected\n" +
-                    "resource pack" + trailS + " from your Minecraft folder?"
-            );
-            //@formatter:on
-
-            if (! yes) { return; }
-
-            for (final String s : choice) {
-                final File f = new File(OsUtils.getMcDir("resourcepacks"), s + ".zip");
-                f.delete();
-            }
-
-            reloadOptions();
-        }
-    };
     private JButton buttonClose;
     private JButton buttonDelete;
 
-    public DialogManageMcPacks() {
-        super(App.getFrame(), "Manage packs in MC");
-
-        mcPacks = getOptions();
-
-        createDialog();
-    }
 
     private List<String> getOptions() {
         final List<File> aList = FileUtils.listDirectory(OsUtils.getMcDir("resourcepacks"));
         final List<String> options = new ArrayList<String>();
 
         for (final File f : aList) {
-            if (f.isDirectory()) { continue; }
+            if (f.isDirectory()) continue;
             final String[] parts = FileUtils.getFilenameParts(f);
 
             if (parts[1].equalsIgnoreCase("zip")) {
@@ -90,9 +54,20 @@ public class DialogManageMcPacks extends RpwDialog {
         return options;
     }
 
+
     private void reloadOptions() {
         list.setItems(mcPacks = getOptions());
     }
+
+
+    public DialogManageMcPacks() {
+        super(App.getFrame(), "Manage packs in MC");
+
+        mcPacks = getOptions();
+
+        createDialog();
+    }
+
 
     @Override
     protected JComponent buildGui() {
@@ -133,6 +108,7 @@ public class DialogManageMcPacks extends RpwDialog {
 
     }
 
+
     @Override
     protected void addActions() {
         list.addKeyListener(new KeyPressListener() {
@@ -149,4 +125,38 @@ public class DialogManageMcPacks extends RpwDialog {
         buttonClose.addActionListener(closeListener);
         buttonDelete.addActionListener(deleteListener);
     }
+
+    private final ActionListener deleteListener = new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final List<String> choice = list.getSelectedValues();
+
+            if (choice == null) {
+                return;
+            }
+
+            // OK name
+
+            final String trailS = (choice.size() > 1 ? "s" : "");
+
+            //@formatter:off
+            final boolean yes = Alerts.askYesNo(
+                    DialogManageMcPacks.this,
+                    "Deleting Installed Pack" + trailS,
+                    "Do you really want to delete the selected\n" +
+                            "resource pack" + trailS + " from your Minecraft folder?"
+            );
+            //@formatter:on
+
+            if (!yes) return;
+
+            for (final String s : choice) {
+                final File f = new File(OsUtils.getMcDir("resourcepacks"), s + ".zip");
+                f.delete();
+            }
+
+            reloadOptions();
+        }
+    };
 }

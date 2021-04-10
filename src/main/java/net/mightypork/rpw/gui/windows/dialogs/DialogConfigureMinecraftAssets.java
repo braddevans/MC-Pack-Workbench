@@ -11,14 +11,20 @@ import net.mightypork.rpw.gui.windows.RpwDialog;
 import net.mightypork.rpw.gui.windows.messages.Alerts;
 import net.mightypork.rpw.library.Sources;
 import net.mightypork.rpw.project.Projects;
+import net.mightypork.rpw.struct.LangEntry;
 import net.mightypork.rpw.tasks.Tasks;
 import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
+import net.mightypork.rpw.utils.logging.Log;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DialogConfigureMinecraftAssets extends RpwDialog {
 
@@ -33,6 +39,7 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
 
         createDialog();
     }
+
 
     @Override
     protected JComponent buildGui() {
@@ -61,15 +68,15 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
         return vb;
     }
 
-    private void updateAssets() {
+
+    private void updateAssets(){
         File file = new File(OsUtils.getAppDir().getPath() + "/library/vanilla/");
         String currentVersion = "";
         for (int i = 0; i < file.list().length; i++) {
-            if (file.list()[i].equals("assets")) {
+            if (file.list()[i].equals("assets")){
                 try {
                     FileUtils.delete(file.listFiles()[i], true);
-                }
-                catch (Exception e) {
+                } catch (Exception e){
                     e.printStackTrace();
                 }
             }
@@ -77,13 +84,14 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
             if (new File(file.listFiles()[i].getPath() + "/structure.dat").exists()) {
                 installedAssets.addItem(file.list()[i]);
 
-                if (file.list()[i].equals(Config.LIBRARY_VERSION)) {
-                    currentVersion = file.list()[i];
+                if (file.list()[i].toString().equals(Config.LIBRARY_VERSION)) {
+                    currentVersion = file.list()[i].toString();
                 }
             }
         }
         installedAssets.list.setSelectedValue(currentVersion, true);
     }
+
 
     @Override
     protected void addActions() {
@@ -93,7 +101,7 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (! Config.LIBRARY_VERSION.equals(installedAssets.getSelectedValue())) {
+                if (!Config.LIBRARY_VERSION.equals(installedAssets.getSelectedValue())){
                     Projects.getActive().setCurrentMcVersion(installedAssets.getSelectedValue());
                     Config.LIBRARY_VERSION = installedAssets.getSelectedValue();
                     Sources.initVanilla();
@@ -150,9 +158,11 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
                 }
             }
 
+
             @Override
             public void keyReleased(KeyEvent e) {
             }
+
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -160,42 +170,42 @@ public class DialogConfigureMinecraftAssets extends RpwDialog {
         });
     }
 
+
     protected void onAssetsSelection() {
         if (installedAssets.getSelectedValue() != null) {
             deleteAssets.setEnabled(true);
             selectAssets.setEnabled(true);
-        }
-        else {
+        }else{
             deleteAssets.setEnabled(false);
             selectAssets.setEnabled(false);
         }
     }
 
-    protected void deleteAssets() {
+
+    protected void deleteAssets(){
         final String assets = installedAssets.getSelectedValue();
 
-        if (assets == null) { return; }
+        if (assets == null) return;
 
-        if (assets.equals(Projects.getActive().getCurrentMcVersion())) {
+        if (assets.equals(Projects.getActive().getCurrentMcVersion())){
             Alerts.error(self(), "You can't delete the asset directory that you are using.\nChange it or inport another one before trying again");
             return;
         }
 
         //@formatter:off
         final boolean y = Alerts.askYesNo(
-                this,
+                DialogConfigureMinecraftAssets.this,
                 "Delete Entry",
                 "Really want to to delete\n"
-                + "assets \"" + assets + "\"?"
+                        + "assets \"" + assets + "\"?"
         );
         //@formatter:on
 
-        if (! y) { return; }
+        if (!y) return;
 
         try {
             FileUtils.delete(OsUtils.getAppDir(net.mightypork.rpw.Paths.DIR_VANILLA + "/" + Projects.getActive().getCurrentMcVersion()), true);
-        }
-        catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         installedAssets.removeItem(assets);

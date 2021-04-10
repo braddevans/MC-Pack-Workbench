@@ -1,5 +1,7 @@
 package net.mightypork.rpw.gui.windows.messages;
 
+import javax.swing.JButton;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Paths;
 import net.mightypork.rpw.gui.Icons;
@@ -7,11 +9,11 @@ import net.mightypork.rpw.utils.files.FileUtils;
 import net.mightypork.rpw.utils.files.OsUtils;
 import net.mightypork.rpw.utils.logging.Log;
 
-import javax.swing.*;
 
 public class DialogRuntimeLog extends DialogTerminalBase {
 
     private JButton btnClose;
+
 
     public DialogRuntimeLog() {
         super(App.getFrame(), "Runtime log");
@@ -19,15 +21,18 @@ public class DialogRuntimeLog extends DialogTerminalBase {
         createDialog();
     }
 
+
     @Override
     protected void addActions() {
         btnClose.addActionListener(closeListener);
     }
 
+
     @Override
     protected String getHeadingText() {
         return "Runtime Log";
     }
+
 
     @Override
     protected String getLogText() {
@@ -35,17 +40,18 @@ public class DialogRuntimeLog extends DialogTerminalBase {
 
         try {
             txt = FileUtils.fileToString(OsUtils.getAppDir(Paths.FILE_LOG));
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             Log.e("Error getting log.", e);
         }
         return txt;
     }
 
+
     @Override
     protected boolean hasButtons() {
         return true;
     }
+
 
     @Override
     protected JButton[] makeButtons() {

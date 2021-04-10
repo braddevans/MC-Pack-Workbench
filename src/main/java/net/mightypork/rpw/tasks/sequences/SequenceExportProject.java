@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class SequenceExportProject extends AbstractMonitoredSequence {
 
     private final File target;
@@ -38,8 +39,8 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
     public SequenceExportProject(File target, Runnable onSuccess) {
         this.target = target;
-        successRunnable = onSuccess;
-        project = Projects.getActive();
+        this.successRunnable = onSuccess;
+        this.project = Projects.getActive();
     }
 
     public static int getPackMetaNumber() {
@@ -59,14 +60,13 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
             if (major == 1 && minor < 9) {
                 return 1;
-            }
-            else if (major > 1 || (major == 1 && minor > 10)) {
+            } else if (major > 1 || (major == 1 && minor > 12)) {
+                return 4;
+            } else if (major == 1 && minor > 10) {
                 return 3;
-            }
-            else if (major == 1 && (minor == 9 || minor == 10)) {
+            } else if (major == 1) {
                 return 2;
-            }
-            else {
+            } else {
                 return 3;
             }
         }
@@ -125,8 +125,7 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
             }
             //@formatter:on
 
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             Log.e(e);
             return false;
         }
@@ -144,8 +143,7 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         try {
             final File dir = project.getExtrasDirectory();
             addDirectoryToZip(dir, "");
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             Log.e("Error when including extras.", t);
             return false;
         }
@@ -169,34 +167,32 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
     private boolean stepAddConfigFiles() throws IOException {
         // pack.png
-        if (Config.LOG_EXPORT_FILES) { Log.f3("+ pack.png"); }
+        if (Config.LOG_EXPORT_FILES) Log.f3("+ pack.png");
         InputStream in = null;
         try {
             final File f = new File(project.getProjectDirectory(), "pack.png");
             if (f.exists()) {
                 in = new FileInputStream(f);
-            }
-            else {
+            } else {
                 in = FileUtils.getResource("/data/export/pack.png");
             }
             zb.addStream("pack.png", in);
-        }
-        finally {
+        } finally {
             Utils.close(in);
         }
 
-        if (Config.LOG_EXPORT_FILES) { Log.f3("+ readme.txt"); }
+        if (Config.LOG_EXPORT_FILES) Log.f3("+ readme.txt");
         zb.addResource("readme.txt", "/data/export/pack-readme.txt");
 
         zb.addString("rpw-version.txt", Const.getGeneratorStamp());
 
-        if (Config.LOG_EXPORT_FILES) { Log.f3("+ assets/minecraft/sounds.json"); }
+        if (Config.LOG_EXPORT_FILES) Log.f3("+ assets/minecraft/sounds.json");
         if (project.getSoundsMap() != null) {
             zb.addString("assets/minecraft/sounds.json", project.getSoundsMap().toJson());
         }
 
         // json mcmeta
-        if (Config.LOG_EXPORT_FILES) { Log.f3("+ pack.mcmeta"); }
+        if (Config.LOG_EXPORT_FILES) Log.f3("+ pack.mcmeta");
         final String title = project.getTitle();
         final String desc = project.getDescription();
         final PackMcmeta packMeta = new PackMcmeta();
@@ -237,8 +233,7 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
 
         try {
             zb.close();
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             Log.e(e);
         }
 
@@ -248,13 +243,12 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
                 Log.i("Unziping " + Projects.getActive().getName());
                 ZipUtils.extractZip(target, OsUtils.getMcDir("resourcepacks/" + Projects.getActive().getName()), null);
                 Files.delete(Paths.get(target.getPath()));
-            }
-            catch (IOException exception) {
+            } catch (IOException exception) {
                 exception.printStackTrace();
             }
         }
 
-        if (! success) {
+        if (!success) {
             Log.w("Exporting project \"" + project.getTitle() + "\" - FAILED.");
             // cleanup
             target.delete();
@@ -263,14 +257,14 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
             Alerts.error(
                     App.activeDialog,
                     "An error occured while exporting.\n" +
-                    "Check log file for details."
+                            "Check log file for details."
             );
             //@formatter:on
 
             return;
         }
 
-        if (successRunnable != null) { successRunnable.run(); }
+        if (successRunnable != null) successRunnable.run();
 
         Log.f1("Exporting project \"" + project.getTitle() + "\" to " + target + " - done.");
 
@@ -283,7 +277,7 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
         FileUtils.listDirectoryRecursive(dir, null, filesToAdd);
 
         for (final File file : filesToAdd) {
-            if (! file.isFile()) { return; }
+            if (!file.isFile()) return;
 
             String path = file.getAbsolutePath();
             path = pathPrefix + path.replace(dir.getAbsolutePath(), "");
@@ -295,12 +289,11 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
             try {
                 in = new FileInputStream(file);
                 zb.addStream(path, in);
-            }
-            finally {
+            } finally {
                 Utils.close(in);
             }
 
-            if (Config.LOG_EXPORT_FILES) { Log.f3("+ " + path); }
+            if (Config.LOG_EXPORT_FILES) Log.f3("+ " + path);
         }
     }
 
@@ -317,15 +310,15 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
                 boolean fileSaved = false;
                 do {
                     final String srcName = leaf.resolveAssetSource();
-                    if (srcName == null) { break; }
-                    if (MagicSources.isVanilla(srcName)) { break; }
-                    if (MagicSources.isInherit(srcName)) { break; }
+                    if (srcName == null) break;
+                    if (MagicSources.isVanilla(srcName)) break;
+                    if (MagicSources.isInherit(srcName)) break;
 
                     InputStream data = null;
 
                     try {
                         data = Sources.getAssetStream(srcName, leaf.getAssetKey());
-                        if (data == null) { break; }
+                        if (data == null) break;
 
                         final String path = leaf.getAssetEntry().getPath();
 
@@ -335,24 +328,21 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
                         logEntry += " <- \"" + srcName + "\"";
 
                         fileSaved = true;
-                    }
-                    catch (final IOException e) {
+                    } catch (final IOException e) {
                         Log.e("Error getting asset stream.", e);
-                    }
-                    finally {
+                    } finally {
                         Utils.close(data);
                     }
-                }
-                while (false);
+                } while (false);
 
-                if (! fileSaved) { return; }
+                if (!fileSaved) return;
 
                 // meta
                 do {
                     final String srcName = node.resolveAssetMetaSource();
-                    if (srcName == null) { break; }
-                    if (MagicSources.isVanilla(srcName)) { break; }
-                    if (MagicSources.isInherit(srcName)) { break; }
+                    if (srcName == null) break;
+                    if (MagicSources.isVanilla(srcName)) break;
+                    if (MagicSources.isInherit(srcName)) break;
 
                     InputStream data = null;
 
@@ -367,15 +357,12 @@ public class SequenceExportProject extends AbstractMonitoredSequence {
                         zb.addStream(path, data);
 
                         logEntry += ", m: \"" + srcName + "\"";
-                    }
-                    catch (final IOException e) {
+                    } catch (final IOException e) {
                         Log.e("Error getting asset meta stream.", e);
-                    }
-                    finally {
+                    } finally {
                         Utils.close(data);
                     }
-                }
-                while (false);
+                } while (false);
 
                 if (Config.LOG_EXPORT_FILES) {
                     Log.f3(logEntry);

@@ -1,8 +1,9 @@
 package net.mightypork.rpw;
 
+import java.io.File;
+
 import net.mightypork.rpw.utils.files.OsUtils;
 
-import java.io.File;
 
 public class Paths {
     // in user home
@@ -49,7 +50,7 @@ public class Paths {
     public static final String DATA_DIR_HTML = DATA_DIR + "/html/";
     public static final String DATA_DIR_IMAGES = "/images/";
 
-    //    public static final String URL_DONATE = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B9X6Q5QU7FKPC";
+//    public static final String URL_DONATE = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B9X6Q5QU7FKPC";
     public static final String URL_UPDATE_FILE = "https://raw.githubusercontent.com/MightyPork/rpw/master/changelog.txt";
     public static final String URL_RPW_WEB = "https://mcrpw.github.io/";
     public static final String URL_GITHUB_REPO = "https://github.com/mcRPW/rpw/";
@@ -60,6 +61,7 @@ public class Paths {
     public static File getProjectBackupFolder(String identifier) {
         return OsUtils.getAppDir(Paths.DIR_PROJECT_BACKUP_TMP + "-" + identifier, true);
     }
+
 
     public static File getProjectFolder(String identifier) {
         return OsUtils.getAppDir(Paths.DIR_PROJECTS + "/" + identifier, true);

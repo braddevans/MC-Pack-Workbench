@@ -1,20 +1,23 @@
 package net.mightypork.rpw.tree.assets.tree;
 
-import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-public class AssetTreeGroup extends AssetTreeNode {
+import javax.swing.tree.TreeNode;
 
-    public ArrayList<AssetTreeNode> children = new ArrayList<AssetTreeNode>();
-    public String groupKey;
+
+public class AssetTreeGroup extends AssetTreeNode {
 
     public AssetTreeGroup(String groupKey, String label, String librarySource) {
         super(label, librarySource);
         this.groupKey = groupKey;
     }
+
+    public ArrayList<AssetTreeNode> children = new ArrayList<AssetTreeNode>();
+    public String groupKey;
+
 
     /**
      * Get asset key
@@ -25,25 +28,30 @@ public class AssetTreeGroup extends AssetTreeNode {
         return groupKey;
     }
 
+
     @Override
     public boolean isLeaf() {
         return false;
     }
+
 
     @Override
     public int getChildCount() {
         return children.size();
     }
 
+
     @Override
     public int getIndex(TreeNode child) {
         return children.indexOf(child);
     }
 
+
     @Override
     public AssetTreeNode getChildAt(int index) {
         return children.get(index);
     }
+
 
     /**
      * Add a child to this group
@@ -51,9 +59,10 @@ public class AssetTreeGroup extends AssetTreeNode {
      * @param child
      */
     public void addChild(AssetTreeNode child) {
-        children.add(child);
+        this.children.add(child);
         child.setParent(this);
     }
+
 
     @Override
     public void prepareForDisplay() {
@@ -65,11 +74,12 @@ public class AssetTreeGroup extends AssetTreeNode {
 
         for (int i = children.size() - 1; i >= 0; i--) {
             final AssetTreeNode child = children.get(i);
-            if (! child.isLeaf() && child.getChildCount() == 0) {
+            if (!child.isLeaf() && child.getChildCount() == 0) {
                 children.remove(i);
             }
         }
     }
+
 
     @Override
     public void processThisAndChildren(AssetTreeProcessor processor) {
@@ -79,40 +89,48 @@ public class AssetTreeGroup extends AssetTreeNode {
         }
     }
 
+
     @Override
     public Enumeration children() {
         return Collections.enumeration(children);
     }
+
 
     @Override
     public List<AssetTreeNode> getChildrenList() {
         return children;
     }
 
+
     @Override
     public boolean isDirectory() {
         return true;
     }
+
 
     @Override
     public boolean isFile() {
         return false;
     }
 
+
     @Override
     public boolean isSound() {
         return false;
     }
+
 
     @Override
     public boolean isImage() {
         return false;
     }
 
+
     @Override
     public boolean isText() {
         return false;
     }
+
 
     @Override
     public boolean isJson() {

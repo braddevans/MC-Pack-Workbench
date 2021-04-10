@@ -1,5 +1,14 @@
 package net.mightypork.rpw.gui.windows;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.WindowConstants;
+
 import net.mightypork.rpw.App;
 import net.mightypork.rpw.Config;
 import net.mightypork.rpw.gui.Gui;
@@ -9,29 +18,27 @@ import net.mightypork.rpw.gui.widgets.MenuMain;
 import net.mightypork.rpw.gui.widgets.SidePanel;
 import net.mightypork.rpw.gui.widgets.TreeDisplay;
 import net.mightypork.rpw.tasks.Tasks;
+
 import net.mightypork.rpw.utils.logging.Log;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowEvent;
 
 public class WindowMain {
-    private final JXStatusBar statusbar;
-    private final JXLabel sblabel;
     public JXFrame frame;
     public MenuMain menu;
     public TreeDisplay treeDisplay;
     public SidePanel sidePanel;
+    private JXStatusBar statusbar;
+    private JXLabel sblabel;
 
     public WindowMain() {
         frame = new JXFrame(App.getWindowTitle());
         frame.setIconImage(Icons.WINDOW.getImage());
 
-        statusbar = new JXStatusBar();
+        statusbar  = new JXStatusBar();
         frame.setStatusBar(statusbar);
         statusbar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, true);
         statusbar.add(sblabel = new JXLabel(""));
@@ -62,23 +69,22 @@ public class WindowMain {
         App.inst.mainFrame = frame;
     }
 
+
     /**
      * Set stayusbar text
-     *
-     * @param s
-     *         - text to show
+     * @param s - text to show
      */
     public void setStatus(String s) {
-        if (s == null || s.length() == 0) { s = " "; }
+        if (s == null || s.length()==0) s = " ";
         sblabel.setText(s);
     }
 
     private Component buildMainPanel() {
-        if (Config.USE_NIMBUS) { Gui.useMetal(); }
+        if (Config.USE_NIMBUS) Gui.useMetal();
 
         treeDisplay = new TreeDisplay();
 
-        if (Config.USE_NIMBUS) { Gui.useNimbusLaF(); }
+        if (Config.USE_NIMBUS) Gui.useNimbusLaF();
 
         final JScrollPane scrollpane = new JScrollPane(treeDisplay.treeTable);
 
@@ -96,13 +102,13 @@ public class WindowMain {
         return split;
     }
 
+
     public void setWaiting(boolean state) {
         try {
             App.getFrame().setWaitCursorVisible(state);
             App.getFrame().setWaiting(state);
             App.getFrame().setWaitPaneVisible(state);
-        }
-        catch (NullPointerException npe) {
+        } catch (NullPointerException npe) {
             Log.e(npe);
         }
     }

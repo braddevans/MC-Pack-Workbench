@@ -1,21 +1,27 @@
 package net.mightypork.rpw.gui.widgets;
 
+import java.awt.Component;
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
 import net.mightypork.rpw.gui.Gui;
 
-import javax.swing.*;
-import java.awt.*;
 
 public class ManagerLayout extends HBox {
 
-    private VBox left;
-    private JPanel right;
+    private VBox left = null;
+    private JPanel right = null;
     private JButton[] topButtons = new JButton[0];
     private JButton[] bottomButtons = new JButton[0];
-    private int maxButtons;
+    private int maxButtons = 0;
+
 
     public ManagerLayout() {
         this(6);
     }
+
 
     public ManagerLayout(int maxButtons) {
         left = new VBox();
@@ -30,17 +36,21 @@ public class ManagerLayout extends HBox {
         add(right);
     }
 
+
     public void setMainComponent(Component c) {
         left.add(c);
     }
+
 
     public void setTopButtons(JButton... btns) {
         topButtons = btns;
     }
 
+
     public void setBottomButtons(JButton... btns) {
         bottomButtons = btns;
     }
+
 
     public void build() {
         if (topButtons.length + bottomButtons.length > maxButtons) {
@@ -67,7 +77,7 @@ public class ManagerLayout extends HBox {
 
         // add gaps to remaining slots
         for (int i = 0; i < bb.length; i++) {
-            if (bb[i] == null) { bb[i] = Gui.hgap_large(); }
+            if (bb[i] == null) bb[i] = Gui.hgap_large();
 
             right.add(bb[i]);
         }
